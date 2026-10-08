@@ -398,3 +398,26 @@
 @utility border-active {
   border-width: var(--border-active);
 }
+
+/* ------------------------------------------------------------------ */
+/* P6.8 — Crosshair cursor                                              */
+/* While <Crosshair> is mounted (fine pointer, motion allowed) it adds  */
+/* `has-crosshair` to <html> and replaces the native cursor. Text      */
+/* entry keeps its I-beam. Unlayered on purpose: it must beat the      */
+/* `cursor-*` utilities of controls.                                   */
+/* ------------------------------------------------------------------ */
+@media (pointer: fine) {
+  html.has-crosshair,
+  html.has-crosshair * {
+    cursor: none;
+  }
+
+  html.has-crosshair
+    :is(
+      input:not([type="checkbox"], [type="radio"], [type="range"], [type="button"], [type="submit"], [type="reset"], [type="color"], [type="file"], [type="image"]),
+      textarea,
+      [contenteditable]:not([contenteditable="false"])
+    ) {
+    cursor: text;
+  }
+}

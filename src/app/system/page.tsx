@@ -6,6 +6,14 @@ import { Grid, GridCell, type GridSpan, type GridStart } from "@/components/layo
 import { Rule } from "@/components/layout/Rule";
 import { Scene, sceneTitleId, type Surface } from "@/components/layout/Scene";
 import { Stack } from "@/components/layout/Stack";
+import { Crosshair } from "@/components/motion/Crosshair";
+import { Magnetic } from "@/components/motion/Magnetic";
+import { Pin } from "@/components/motion/Pin";
+import { RuleDraw } from "@/components/motion/RuleDraw";
+import { ScrubText } from "@/components/motion/ScrubText";
+import { SplitReveal } from "@/components/motion/SplitReveal";
+import { Trace } from "@/components/motion/Trace";
+import { WidthFlex } from "@/components/motion/WidthFlex";
 import { Spec } from "@/components/type/Spec";
 import { Text, type TextVariant } from "@/components/type/Text";
 import { Button } from "@/components/ui/Button";
@@ -13,6 +21,7 @@ import { CopyButton } from "@/components/ui/CopyButton";
 import { Link } from "@/components/ui/Link";
 import { RollText } from "@/components/ui/RollText";
 import { TitleBlock } from "@/components/ui/TitleBlock";
+import { CompileDemo, DimensionDemo, HoverPreviewDemo } from "./MotionDemos";
 
 export const metadata: Metadata = {
   title: "System",
@@ -170,6 +179,29 @@ function SceneHeading({ id, children }: { id: string; children: string }) {
   );
 }
 
+/**
+ * Trace anchor for the specimen sheet: an empty point centred in the left or
+ * right page margin, level with the top of the scene's content.
+ */
+function Via({ side }: { side: "left" | "right" }) {
+  return (
+    <span
+      data-via={side}
+      aria-hidden="true"
+      className={`absolute top-section h-0 w-margin ${side === "left" ? "left-0" : "right-0"}`}
+    />
+  );
+}
+
+const pinCards = [
+  { rev: "Rev. F", org: "Specimen track item", dates: "2026 — present" },
+  { rev: "Rev. E", org: "Specimen track item", dates: "2025 — 2026" },
+  { rev: "Rev. D", org: "Specimen track item", dates: "2024 — 2025" },
+  { rev: "Rev. C", org: "Specimen track item", dates: "2023 — 2024" },
+  { rev: "Rev. B", org: "Specimen track item", dates: "2022 — 2023" },
+  { rev: "Rev. A", org: "Specimen track item", dates: "2021 — 2022" },
+] as const;
+
 const contact = {
   email: "faizmohammed176@gmail.com",
   github: "https://github.com/faizz-167",
@@ -286,6 +318,7 @@ function InteractiveScene({ surface }: { surface: Surface }) {
   const id = `ui-${surface}`;
   return (
     <Scene id={id} sheet={`System — interactive on ${surface}`} surface={surface}>
+      <Via side={surface === "ink" ? "left" : "right"} />
       <Container>
         <Stack gap={7}>
           <SceneHeading id={id}>{`Interactive on ${surface}`}</SceneHeading>
@@ -300,6 +333,7 @@ function TextSpecimen({ surface, children }: { surface: Surface; children?: Reac
   const id = `text-${surface}`;
   return (
     <Scene id={id} sheet={`System — text on ${surface}`} surface={surface}>
+      <Via side={surface === "paper" ? "right" : "left"} />
       <Container>
         <Stack gap={7}>
           <SceneHeading id={id}>{`Text on ${surface}`}</SceneHeading>
@@ -344,7 +378,9 @@ function TextSpecimen({ surface, children }: { surface: Surface; children?: Reac
 
 export default function SystemPage() {
   return (
-    <main className="group">
+    <main className="group relative">
+      <Trace />
+      <Crosshair />
       <input
         type="checkbox"
         id={GRID_TOGGLE_ID}
@@ -354,6 +390,7 @@ export default function SystemPage() {
       <GridOverlay />
 
       <Scene id="system" sheet="System — specimen" surface="ink">
+        <Via side="left" />
         <Container>
           <Stack gap={7}>
             <Text variant="h1" id={sceneTitleId("system")}>
@@ -373,6 +410,7 @@ export default function SystemPage() {
       </Scene>
 
       <Scene id="colour" sheet="System — colour" surface="paper">
+        <Via side="right" />
         <Container>
           <Stack gap={7}>
             <SceneHeading id="colour">Colour</SceneHeading>
@@ -413,6 +451,7 @@ export default function SystemPage() {
       </Scene>
 
       <Scene id="type" sheet="System — type scale" surface="ink">
+        <Via side="left" />
         <Container>
           <Stack gap={7}>
             <SceneHeading id="type">Type scale</SceneHeading>
@@ -433,6 +472,7 @@ export default function SystemPage() {
       </Scene>
 
       <Scene id="spacing" sheet="System — spacing" surface="paper">
+        <Via side="right" />
         <Container>
           <Stack gap={7}>
             <SceneHeading id="spacing">Spacing</SceneHeading>
@@ -454,6 +494,7 @@ export default function SystemPage() {
       </Scene>
 
       <Scene id="grid" sheet="System — grid" surface="ink">
+        <Via side="left" />
         <Container>
           <Stack gap={7}>
             <SceneHeading id="grid">Grid</SceneHeading>
@@ -500,6 +541,7 @@ export default function SystemPage() {
       </Scene>
 
       <Scene id="layout" sheet="System — layout primitives" surface="paper">
+        <Via side="right" />
         <Container>
           <Stack gap={7}>
             <SceneHeading id="layout">Layout primitives</SceneHeading>
@@ -557,6 +599,163 @@ export default function SystemPage() {
               </Cluster>
             </Stack>
           </Stack>
+        </Container>
+      </Scene>
+
+
+      {/* P6.11 — motion components (ink → paper → ink → paper). */}
+      <Scene id="motion-text" sheet="System — motion: text" surface="ink">
+        <Via side="left" />
+        <Container>
+          <Stack gap={7}>
+            <SplitReveal as="h2" id={sceneTitleId("motion-text")} trigger="mount" className="font-display text-h2">
+              Motion on text: reveal, scrub and width
+            </SplitReveal>
+            <Stack gap={5}>
+              <Text variant="data" tone="muted">
+                SplitReveal · lines · on mount (heading above) · words · on scroll
+              </Text>
+              <SplitReveal as="p" split="words" className="max-w-lede font-text text-lede">
+                Every page is a sheet, every section a view, every project an assembly, drawn in hairlines and measured in real pixels.
+              </SplitReveal>
+              <Text variant="data" tone="muted">
+                SplitReveal · chars · on scroll
+              </Text>
+              <SplitReveal as="p" split="chars" className="font-display text-h3">
+                Call me, Baby — for your new website.
+              </SplitReveal>
+            </Stack>
+            <Rule />
+            <Stack gap={5}>
+              <Text variant="data" tone="muted">
+                WidthFlex · hover (wdth 100 → 130) inside a link
+              </Text>
+              <Link variant="plain" href="#motion-pointer" className="block">
+                <WidthFlex mode="hover" className="font-display text-h2">
+                  Stretch on hover
+                </WidthFlex>
+              </Link>
+              <Text variant="data" tone="muted">
+                WidthFlex · velocity (scroll speed → wdth 85–115)
+              </Text>
+              <WidthFlex mode="velocity" as="p" className="font-display text-h1">
+                Scroll faster
+              </WidthFlex>
+              <Text variant="data" tone="muted">
+                WidthFlex · compile (parent timeline cuts 50 → 140 → 100)
+              </Text>
+              <CompileDemo />
+            </Stack>
+          </Stack>
+        </Container>
+      </Scene>
+
+      <Scene id="motion-scrub" sheet="System — motion: scrub and rules" surface="paper">
+        <Via side="right" />
+        <Container>
+          <Stack gap={7}>
+            <SceneHeading id="motion-scrub">Scrub and rules</SceneHeading>
+            <Stack gap={4}>
+              <Text variant="data" tone="muted">
+                ScrubText · words 20% → 100% ink, scrubbed to scroll
+              </Text>
+              <ScrubText className="max-w-lede font-text text-h3">
+                I build systems end to end: the schema, the service, the screen and the trace that runs between them. Numbers come from the repos, and team work is credited as team work.
+              </ScrubText>
+            </Stack>
+            <Stack gap={4}>
+              <Text variant="data" tone="muted">
+                RuleDraw · every data-rule inside draws in on enter (--ease-wipe)
+              </Text>
+              <RuleDraw>
+                <Stack gap={4}>
+                  <Rule />
+                  <Text variant="small">Item · Spec · Qty · Category · Used in</Text>
+                  <Rule />
+                  <Text variant="small">TypeScript · 5.x · 4 · Language · SpeechPath, ZingDesk</Text>
+                  <Rule />
+                  <Text variant="small">PostgreSQL · 16 · 3 · Data · ZingDesk, Academic ERP</Text>
+                  <Rule emphasis="active" />
+                  <Cluster gap={4} align="stretch" className="h-8">
+                    <Text variant="data">Left</Text>
+                    <Rule orientation="vertical" />
+                    <Text variant="data">Vertical rules draw from the top</Text>
+                    <Rule orientation="vertical" emphasis="active" />
+                    <Text variant="data">Right</Text>
+                  </Cluster>
+                </Stack>
+              </RuleDraw>
+            </Stack>
+          </Stack>
+        </Container>
+      </Scene>
+
+      <Scene id="motion-pointer" sheet="System — motion: pointer and measure" surface="ink">
+        <Via side="left" />
+        <Container>
+          <Stack gap={7}>
+            <SceneHeading id="motion-pointer">Pointer and measure</SceneHeading>
+            <Stack gap={4}>
+              <Text variant="data" tone="muted">
+                Crosshair · this page mounts it (fine pointer, motion allowed); text inputs keep the I-beam
+              </Text>
+              <label className="flex max-w-lede flex-col gap-2">
+                <Text variant="data" tone="muted">
+                  Text input
+                </Text>
+                <input type="text" placeholder="I-beam here" className="min-h-touch border-hair border-rule bg-transparent px-3 font-mono text-data" />
+              </label>
+            </Stack>
+            <Stack gap={4} align="start">
+              <Text variant="data" tone="muted">
+                Magnetic · up to 12px toward the pointer (Motion spring)
+              </Text>
+              <Magnetic>
+                <Button size="lg" href="#motion-pin">
+                  Call me
+                </Button>
+              </Magnetic>
+            </Stack>
+            <Stack gap={4}>
+              <Text variant="data" tone="muted">
+                HoverPreview · hover a row (120ms intent, preloaded on enter)
+              </Text>
+              <HoverPreviewDemo />
+            </Stack>
+            <Stack gap={4}>
+              <Text variant="data" tone="muted">
+                Dimension · anime.js, measured with ResizeObserver
+              </Text>
+              <DimensionDemo />
+            </Stack>
+          </Stack>
+        </Container>
+      </Scene>
+
+      <Scene id="motion-pin" sheet="System — motion: pin" surface="paper">
+        <Via side="right" />
+        <Container>
+          <Stack gap={7}>
+            <SceneHeading id="motion-pin">Pin</SceneHeading>
+            <Text variant="data" tone="muted">
+              Pinned horizontal track from 1024px with motion allowed; a vertical stack otherwise
+            </Text>
+          </Stack>
+        </Container>
+        <Container className="mt-7">
+          <Pin trackClassName="data-pinned:*:w-lede *:shrink-0">
+            {pinCards.map((card) => (
+              <Stack key={card.rev} gap={3} className="border-hair border-rule p-5">
+                <Text variant="h1" as="p">
+                  {card.rev}
+                </Text>
+                <Text variant="lede">{card.org}</Text>
+                <Text variant="data" tone="muted">
+                  {card.dates}
+                </Text>
+              </Stack>
+            ))}
+          </Pin>
         </Container>
       </Scene>
 

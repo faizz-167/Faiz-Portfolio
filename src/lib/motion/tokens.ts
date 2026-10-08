@@ -53,6 +53,17 @@ export const durationsS = {
   scene: 1.1,
 } as const;
 
+/**
+ * Stagger between split units, in seconds (Phase 6). Finer units stagger
+ * faster so a line, a sentence of words and a word of chars take similar time.
+ * chars = 0.025 is the hero fill stagger (phase9.md P9.3).
+ */
+export const staggersS = {
+  lines: 0.08,
+  words: 0.04,
+  chars: 0.025,
+} as const;
+
 /** Both units, keyed by token name. */
 export const durations = { ms: durationsMs, s: durationsS } as const;
 
@@ -76,3 +87,4 @@ export const cssVars = {
 
 export type EaseName = keyof typeof cubicBeziers;
 export type DurationName = keyof typeof durationsMs;
+export type StaggerName = keyof typeof staggersS;
