@@ -126,11 +126,15 @@
   --color-raised: var(--raised);
   --color-accent: var(--accent);
   --color-error: var(--fault-c);
+  /* P4.3 — button hover wipe: fill and the label colour on top of it (design.md §6) */
+  --color-wipe: var(--wipe);
+  --color-on-wipe: var(--on-wipe);
 
   --spacing-section: var(--section-y);
   --spacing-margin: var(--margin-x);
   --spacing-gutter: var(--gutter);
   --spacing-touch: var(--touch-min);
+  --spacing-control-lg: var(--control-lg);
   --spacing-strip: var(--strip-h);
   --spacing-dock: var(--dock-h);
 
@@ -168,7 +172,8 @@
     --measure-lede: 48ch;
     --strip-h: 44px;
     --dock-h: 56px;
-    --touch-min: 44px;
+    --touch-min: 44px; /* also the md button height */
+    --control-lg: 56px; /* lg button height (design.md §6) */
 
     /* P2.5 — borders & layers */
     --border-hair: 1px;
@@ -207,6 +212,8 @@
     --raised: var(--color-ink-2);
     --accent: var(--color-signal);
     --fault-c: var(--color-fault);
+    --wipe: var(--color-signal);
+    --on-wipe: var(--color-on-signal);
     --muted-mix: 62%;
     color-scheme: dark;
   }
@@ -217,6 +224,8 @@
     --raised: var(--color-paper-2);
     --accent: var(--color-signal-deep);
     --fault-c: var(--color-fault-deep);
+    --wipe: var(--color-signal-deep); /* lime on paper is 1.07:1 */
+    --on-wipe: var(--color-paper);
     --muted-mix: 62%;
     color-scheme: light;
   }
@@ -227,6 +236,8 @@
     --raised: var(--color-signal);
     --accent: var(--color-on-signal);
     --fault-c: var(--color-fault-deep);
+    --wipe: var(--color-ink);
+    --on-wipe: var(--color-signal);
     --muted-mix: 72%; /* 62% measures 4.3:1 on lime and fails AA */
     color-scheme: light;
   }

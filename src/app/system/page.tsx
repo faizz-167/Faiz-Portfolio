@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Cluster } from "@/components/layout/Cluster";
 import { Container } from "@/components/layout/Container";
 import { Grid, GridCell, type GridSpan, type GridStart } from "@/components/layout/Grid";
@@ -7,6 +8,11 @@ import { Scene, sceneTitleId, type Surface } from "@/components/layout/Scene";
 import { Stack } from "@/components/layout/Stack";
 import { Spec } from "@/components/type/Spec";
 import { Text, type TextVariant } from "@/components/type/Text";
+import { Button } from "@/components/ui/Button";
+import { CopyButton } from "@/components/ui/CopyButton";
+import { Link } from "@/components/ui/Link";
+import { RollText } from "@/components/ui/RollText";
+import { TitleBlock } from "@/components/ui/TitleBlock";
 
 export const metadata: Metadata = {
   title: "System",
@@ -164,7 +170,133 @@ function SceneHeading({ id, children }: { id: string; children: string }) {
   );
 }
 
-function TextSpecimen({ surface }: { surface: Surface }) {
+const contact = {
+  email: "faizmohammed176@gmail.com",
+  github: "https://github.com/faizz-167",
+  linkedin: "https://www.linkedin.com/in/mohd-faizz167",
+} as const;
+
+const navLinks = [
+  { label: "Work", href: "#ui-ink" },
+  { label: "Bill of materials", href: "#layout" },
+  { label: "Revisions", href: "#type" },
+  { label: "Contact", href: "#text-signal" },
+] as const;
+
+const titleBlockCells = [
+  { label: "Drawn by", value: "Mohamed Faiz" },
+  { label: "Location", value: "Chennai" },
+  { label: "Availability", value: "Available" },
+  {
+    label: "Elsewhere",
+    span: 2,
+    value: (
+      <span className="flex flex-wrap gap-x-4">
+        <Link href={contact.github}>GitHub</Link>
+        <Link href={contact.linkedin}>LinkedIn</Link>
+        <Link href="/assets/MdFaizResume.pdf" external>
+          Resume
+        </Link>
+      </span>
+    ),
+  },
+  { label: "Approved for build", value: "2026" },
+] as const;
+
+/** Phase 4 primitives on one surface (P4.6). */
+function InteractiveSpecimen({ surface }: { surface: Surface }) {
+  return (
+    <Stack gap={8}>
+      <Stack gap={5}>
+        <Text variant="h3">Link</Text>
+        <Cluster gap={6}>
+          <Link href="#type">Internal · draw</Link>
+          <Link href={contact.github}>External · GitHub</Link>
+          <Link href={`mailto:${contact.email}`}>Mailto</Link>
+        </Cluster>
+        <Text>
+          Inline links stay underlined in body copy, like{" "}
+          <Link variant="inline" href="#grid">
+            the grid sheet
+          </Link>{" "}
+          or{" "}
+          <Link variant="inline" href={contact.linkedin}>
+            the LinkedIn profile
+          </Link>
+          , and the underline thickens on hover.
+        </Text>
+      </Stack>
+
+      <Stack gap={5}>
+        <Text variant="h3">RollText</Text>
+        <Cluster as="nav" aria-label={`Specimen navigation on ${surface}`} gap={5} className="font-mono text-data">
+          {navLinks.map((link) => (
+            <Link key={link.label} variant="nav" href={link.href}>
+              <RollText>{link.label}</RollText>
+            </Link>
+          ))}
+        </Cluster>
+      </Stack>
+
+      <Stack gap={5}>
+        <Text variant="h3">Button</Text>
+        {(["md", "lg"] as const).map((size) => (
+          <Stack key={size} gap={3}>
+            <Text variant="data" tone="muted">
+              {`size ${size}`}
+            </Text>
+            <Cluster gap={4}>
+              <Button size={size} href="#ui-paper">
+                Open the drawing
+              </Button>
+              <Button size={size} variant="outline" href="#grid">
+                See the work
+              </Button>
+              <Button size={size} variant="ghost" href={contact.github}>
+                Repo
+              </Button>
+              <Button size={size} variant="outline" icon="arrow-right">
+                Button element
+              </Button>
+              <Button size={size} disabled>
+                Disabled
+              </Button>
+            </Cluster>
+          </Stack>
+        ))}
+      </Stack>
+
+      <Stack gap={5}>
+        <Text variant="h3">CopyButton</Text>
+        <Cluster gap={4}>
+          <Text variant="data">{contact.email}</Text>
+          <CopyButton value={contact.email} label="Copy email" />
+        </Cluster>
+      </Stack>
+
+      <Stack gap={5}>
+        <Text variant="h3">TitleBlock</Text>
+        <TitleBlock cells={titleBlockCells} />
+      </Stack>
+    </Stack>
+  );
+}
+
+function InteractiveScene({ surface }: { surface: Surface }) {
+  const id = `ui-${surface}`;
+  return (
+    <Scene id={id} sheet={`System — interactive on ${surface}`} surface={surface}>
+      <Container>
+        <Stack gap={7}>
+          <SceneHeading id={id}>{`Interactive on ${surface}`}</SceneHeading>
+          <InteractiveSpecimen surface={surface} />
+        </Stack>
+      </Container>
+    </Scene>
+  );
+}
+
+function TextSpecimen({ surface, children }: { surface: Surface; children?: ReactNode }) {
   const id = `text-${surface}`;
   return (
     <Scene id={id} sheet={`System — text on ${surface}`} surface={surface}>
@@ -203,6 +335,7 @@ function TextSpecimen({ surface }: { surface: Surface }) {
               </Text>
             </Cluster>
           </Stack>
+          {children}
         </Stack>
       </Container>
     </Scene>
@@ -427,9 +560,16 @@ export default function SystemPage() {
         </Container>
       </Scene>
 
+      <InteractiveScene surface="ink" />
+      <InteractiveScene surface="paper" />
       <TextSpecimen surface="ink" />
       <TextSpecimen surface="paper" />
-      <TextSpecimen surface="signal" />
+      {/* Signal stays last: its text specimen carries the interactive specimen too. */}
+      <TextSpecimen surface="signal">
+        <Rule />
+        <Text variant="h3">Interactive on signal</Text>
+        <InteractiveSpecimen surface="signal" />
+      </TextSpecimen>
     </main>
   );
 }
