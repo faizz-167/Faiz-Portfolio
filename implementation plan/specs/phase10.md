@@ -64,6 +64,11 @@ Phase 9 complete.
 - Footer TitleBlock: Drawn by (name), Location + local time, Availability (`copy.availability`),
   Links (GitHub, LinkedIn, resume PDF), "Approved for build" stamp cell with current year.
 - Trace terminates at a final via inside the stamp cell.
+- **Footer fold (owner decision 2026-10-08):** on `/` the Contact title block absorbs the Phase 8
+  root `Footer` — the name plus the plain-HTML section links (no-JS navigation on phones) and the
+  dock-height + safe-area reserve below 1024px. Nothing may render after the signal Contact scene on
+  the home page, so the root layout's separate `Footer` must not appear there; keep it on every other
+  route. Keep a single `<footer>` landmark per page.
 
 ### P10.7 — Seams
 - Surface change between scenes is a hard cut (no gradient transitions).

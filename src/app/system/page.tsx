@@ -6,7 +6,6 @@ import { Grid, GridCell, type GridSpan, type GridStart } from "@/components/layo
 import { Rule } from "@/components/layout/Rule";
 import { Scene, sceneTitleId, type Surface } from "@/components/layout/Scene";
 import { Stack } from "@/components/layout/Stack";
-import { Crosshair } from "@/components/motion/Crosshair";
 import { Magnetic } from "@/components/motion/Magnetic";
 import { Pin } from "@/components/motion/Pin";
 import { RuleDraw } from "@/components/motion/RuleDraw";
@@ -154,7 +153,7 @@ function GridOverlay() {
   return (
     <div
       aria-hidden="true"
-      className="pointer-events-none fixed inset-0 z-overlay hidden group-has-[#grid-toggle:checked]:block"
+      className="pointer-events-none fixed inset-0 z-chrome hidden group-has-[#grid-toggle:checked]:block"
     >
       <Container className="h-full">
         <div className="grid h-full grid-cols-subgrid [outline:var(--border-hair)_solid_var(--accent)]">
@@ -378,13 +377,13 @@ function TextSpecimen({ surface, children }: { surface: Surface; children?: Reac
 
 export default function SystemPage() {
   return (
-    <main className="group relative">
+    // The root layout owns <main> and mounts the Crosshair (Phase 8).
+    <div className="group relative">
       <Trace />
-      <Crosshair />
       <input
         type="checkbox"
         id={GRID_TOGGLE_ID}
-        className="fixed top-3 right-3 z-overlay size-5 cursor-pointer accent-accent"
+        className="fixed top-strip right-3 z-chrome mt-3 size-5 cursor-pointer accent-accent"
         aria-label="Show grid overlay"
       />
       <GridOverlay />
@@ -697,7 +696,7 @@ export default function SystemPage() {
             <SceneHeading id="motion-pointer">Pointer and measure</SceneHeading>
             <Stack gap={4}>
               <Text variant="data" tone="muted">
-                Crosshair · this page mounts it (fine pointer, motion allowed); text inputs keep the I-beam
+                Crosshair · mounted app-wide (fine pointer, motion allowed); text inputs keep the I-beam
               </Text>
               <label className="flex max-w-lede flex-col gap-2">
                 <Text variant="data" tone="muted">
@@ -769,6 +768,6 @@ export default function SystemPage() {
         <Text variant="h3">Interactive on signal</Text>
         <InteractiveSpecimen surface="signal" />
       </TextSpecimen>
-    </main>
+    </div>
   );
 }

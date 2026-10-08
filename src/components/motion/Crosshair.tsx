@@ -26,6 +26,14 @@ const crosshairClasses = {
 
 const pad = (n: number) => String(Math.max(0, Math.round(n))).padStart(COORD_DIGITS, "0");
 
+/** `x 0412 · y 0288` — shared with the SheetStrip readout. */
+export function formatCoords(x: number, y: number) {
+  return `x ${pad(x)} · y ${pad(y)}`;
+}
+
+/** Same width as a real readout, for server HTML and before the first move. */
+export const COORDS_PLACEHOLDER = `x ${"-".repeat(COORD_DIGITS)} · y ${"-".repeat(COORD_DIGITS)}`;
+
 function isSurface(value: string | null | undefined): value is Surface {
   return surfaces.includes(value as Surface);
 }
@@ -38,7 +46,7 @@ function isSurface(value: string | null | undefined): value is Surface {
  * Follows with `gsap.quickTo` (transforms only). The native cursor is hidden
  * while mounted, except over text inputs (I-beam stays).
  * Renders nothing on the server, on touch/coarse pointers, or with reduced
- * motion. Phase 8 mounts it once in the provider tree.
+ * motion. Mounted once by MotionProvider (P8.6).
  */
 export function Crosshair() {
   const pointerFine = usePointerFine();
@@ -91,7 +99,7 @@ function CrosshairLayer() {
         }
         xTo(event.clientX);
         yTo(event.clientY);
-        label.textContent = `x ${pad(event.clientX)} · y ${pad(event.clientY)}`;
+        label.textContent = formatCoords(event.clientX, event.clientY);
         setShown(true);
       };
 

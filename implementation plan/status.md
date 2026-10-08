@@ -23,11 +23,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 
 ## Current focus
 
-- **Phase:** 8 — Site chrome (Phase 7 done 2026-10-08, all 4 validation criteria met)
-- **Next subtask:** P8.1
+- **Phase:** 9 — Hero & Statement (Phase 8 done 2026-10-08, all 5 validation criteria met)
+- **Next subtask:** P9.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-08 — Phase 7 complete: typed content in `src/content/` (types, capabilities, projects, experience, profile, selectors in `index.ts`) + `scripts/validate-content.ts` chained into `npm run lint`; lint/build pass (all routes ○); unknown stack id fails type-check, dangling edge fails the script (both reverted); next: Phase 8 / P8.1.
+**Last updated:** 2026-10-08 — Phase 8 complete: site chrome in `src/components/chrome/` (SiteChrome, SheetStrip, SheetLabel, Dock, Menu, Footer, nav) + `useActiveSheet`; landmarks owned by the root layout; Crosshair app-wide; lint/build pass (all routes ○); next: Phase 9 / P9.1.
 
 ## Phase overview
 
@@ -41,7 +41,7 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 5 | Motion infrastructure | `specs/phase5.md` | done |
 | 6 | Motion components | `specs/phase6.md` | done |
 | 7 | Content model & data | `specs/phase7.md` | done |
-| 8 | Site chrome | `specs/phase8.md` | todo |
+| 8 | Site chrome | `specs/phase8.md` | done |
 | 9 | Home scenes I — Hero "Daddy's Home." & Statement | `specs/phase9.md` | todo |
 | 10 | Home scenes II — Work, BOM, Revisions, Contact | `specs/phase10.md` | todo |
 | 11 | Case study pages & architecture diagrams | `specs/phase11.md` | todo |
@@ -144,12 +144,12 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 ### Phase 8 — Chrome
 | ID | Subtask | Status | Notes |
 |---|---|---|---|
-| P8.1 | Skip link + landmarks | todo | |
-| P8.2 | useActiveSheet | todo | |
-| P8.3 | SheetStrip | todo | |
-| P8.4 | Dock | todo | |
-| P8.5 | Menu | todo | |
-| P8.6 | Crosshair mount | todo | |
+| P8.1 | Skip link + landmarks | done | Root layout owns `<header>` (SiteChrome) / `<main id="content" tabIndex=-1>` / `<footer>`; pages render no `<main>` (/system → div, `/` → null); skip link first in header; footer = section links (no-JS nav) + dock clearance |
+| P8.2 | useActiveSheet | done | `src/lib/hooks/useActiveSheet.ts`: store + `useSheetTracker(pathname)` (visible `main [data-sheet]`, `refreshPriority -1`, onToggle + onRefresh) + `useActiveSheet()` |
+| P8.3 | SheetStrip | done | `chrome/SheetStrip.tsx` + `SheetLabel.tsx` (GSAP vertical cut); `--strip-h` 0 below 1024px; coords via CSS `pointer-fine:` + textContent (`formatCoords` exported from Crosshair) |
+| P8.4 | Dock | done | `chrome/Dock.tsx`: full-width bottom bar, safe-area padding (`viewportFit: cover`), GSAP yPercent hide at ±300px/s, reveal on focus; never hides under reduced motion |
+| P8.5 | Menu | done | `chrome/Menu.tsx`: signal dialog, AnimatePresence wipe + link stagger, trap/Escape/inert/Lenis stop + `html.menu-open`; focus moves in a microtask (React's commit restores the pre-commit focus otherwise — found in validation) |
+| P8.6 | Crosshair mount | done | Mounted in MotionProvider, removed from /system; /system grid toggle + overlay moved to z-chrome / below the strip. Validated 2026-10-08 (all 5 criteria, see phase8.md) |
 
 ### Phase 9 — Hero & Statement
 | ID | Subtask | Status | Notes |
@@ -233,6 +233,7 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-08 | IAM role "Solo build" confirmed; Laptop Sentinel notes section kept; ERP keeps its two sections plus the owner's own "The problem" / "What it does" text | Owner answers after Phase 7 |
 | 2026-10-08 | External (outside-service) nodes are never `owned`; enforced by `validate-content.ts` | "Built by me" must only mark what the owner built |
 | 2026-10-08 | BOM has no version/Spec column | Owner decision: no versions to show |
+| 2026-10-08 | Home page: footer folded into the Contact title block (P10.6); root Footer stays on other routes | Owner decision — signal Contact stays the last thing on the home page |
 | 2026-10-08 | Brief's "post-production artist" hero line treated as a paste mismatch | Subject is a full-stack engineer; hero uses compile/build language instead |
 | 2026-10-08 | Tailwind default namespaces cleared: `--color-*`, `--shadow-*`, `--inset-shadow-*`, `--drop-shadow-*`, `--text-shadow-*`, `--blur-*`, `--radius-*`, `--font-*`, `--ease-*`, `--text-*`, `--spacing-*` (incl. the numeric multiplier) | Enforces "tokens only": `p-5` = `--space-5` (24px), no `shadow-*`, `red-500`, `rounded-lg`, `p-7.5`. Unknown numeric spacing classes now generate nothing |
 | 2026-10-08 | `font-display` / `font-text` / `font-mono` are `@utility` rules, not `@theme --font-*` keys | next/font owns `--font-display/-text/-mono` on `<html>`; a theme key of the same name would self-reference. Utilities also carry `"wdth" var(--wdth)` (registered `@property`), optical sizing, and `tabular-nums` |
@@ -278,6 +279,16 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-08 | IAM backend `role: "Solo build"` (dossier gives no role; `role` is required) | Same as the other project on the owner's own GitHub. **Owner to confirm** |
 | 2026-10-08 | Laptop Sentinel `team: "Solo"`; its body is one "Notes from the build" section built from the dossier's page notes; its diagram cols/rows and node kinds chosen by the agent from the dossier topology | Dossier says solo and gives topology + notes but no layout or sections |
 | 2026-10-08 | Academic ERP body: two short sections restating only the summary, the metric and the diagram edges | Dossier has no prose for it; a case page with no body would be empty. **Owner may want to supply copy** |
+| 2026-10-08 | Root layout owns `<header>`/`<main id="content">`/`<footer>` and mounts the chrome; pages render no `<main>` (`/system` wraps in a div, `/` returns null) | <Activity> keeps hidden routes mounted, so per-page `<main id>` would duplicate; chrome state must outlive routes |
+| 2026-10-08 | `--strip-h` is `0px` below 1024px, `44px` from 1024px | Strip is desktop-only; anchor offset and `[id]` scroll-margin read it (Phase 5 note) |
+| 2026-10-08 | Strip cells reuse TitleBlock's hairline treatment, not the component | TitleBlock's stacked label/value cell is taller than `--strip-h` (44px) |
+| 2026-10-08 | Dock is a full-width bar flush with the bottom edge (top hairline), not inset/floating; root layout exports `viewport.viewportFit = "cover"` | Spec asks for `padding-bottom: env(safe-area-inset-bottom)`, which only makes sense if the bar's fill runs under the home indicator; env() is 0 without `cover` |
+| 2026-10-08 | Footer = section links + name (plain HTML), bottom padding = dock + safe area below 1024px | Spec names a `<footer>` landmark but no content; the Menu button needs JS, so phones without JS reach sections through the footer. Contact title block (P10.6) stays page content. **Owner may want a different footer** |
+| 2026-10-08 | Nav hrefs: `#id` on `/`, `/#id` elsewhere; strip name → `#top` on `/`, `/` elsewhere | The anchor handler only takes bare hashes; from other pages the sections are on home |
+| 2026-10-08 | Menu also inerts `<header>` and `<footer>`, closes on route change and at ≥1024px, clips page scroll with `html.menu-open { overflow: clip }` (same as Lenis's stop); reduced motion mounts with `initial={false}` | Full modal behaviour; native scroll under reduced motion; a 0-duration Motion tween still waited a frame |
+| 2026-10-08 | Menu focus moves (open and close) run in a `queueMicrotask` after the layout effect | React's commit restores the element focused before the commit after mutation effects, undoing a focus call made in a layout-effect cleanup |
+| 2026-10-08 | Dock hide threshold ±300px/s (named constant) | Velocity-based per spec; no token exists for it |
+| 2026-10-08 | `/system` grid toggle and overlay moved from z-overlay to z-chrome; toggle sits below the strip (`top-strip mt-3`) | They painted over the menu dialog and the strip's nav |
 
 ## Notes for agents
 
@@ -351,6 +362,17 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 - Project fields that may be absent: `year` (ERP), `team` (ERP, IAM), `repo` (ERP), `live` (only ZingDesk), `cover` (none yet), `links` (none). IAM has empty metrics/architecture/body. Laptop Sentinel has no metrics. No capability has a `version` (BOM Spec column will be empty).
 - Diagram `owned`: SpeechPath only `browser`; all other diagram nodes owned. Legend "Team of 2" only on SpeechPath.
 - New content files must use `import type` between each other (the validation script loads them with Node's type stripping).
+
+### Carry-forward notes from Phase 8
+- Pages must **not** render `<main>`: the root layout owns `<main id="content">`, `<header>` and `<footer>`. Return scenes directly (a fragment or a positioned wrapper `div` for the Trace).
+- The strip/dock read `Scene`'s `data-sheet` + `data-surface`; only scenes inside `main` that are rendered count. Phase 9/10 sheet labels show verbatim (e.g. "Sheet 03 — Assemblies"). The hero scene id must stay `top` (strip name links to `#top`).
+- Nav anchors are `#work`, `#materials`, `#revisions`, `#contact` (`src/components/chrome/nav.ts`); the Phase 10 scene ids must match.
+- Desktop strip is fixed 44px over the top of each scene's padding; `--section-y` (≥96px) clears it. A `Pin` that starts at `top top` will have its top 44px under the strip — offset P10.5's pin start by `--strip-h` if content sits there.
+- Below 1024px the footer pads by `--dock-h` + safe area so the last content clears the dock; nothing else needs to reserve it.
+- Contact (P10.6) is signal and comes last, but the layout `<footer>` (ink, body surface) follows it. Decide in Phase 10 whether the footer should take the signal surface or be folded into the contact title block (owner call; see Decisions log).
+- Menu is the only `z-overlay` dialog; anything else fixed at `z-overlay` inside a page paints over it (pages come later in the DOM). Use `z-chrome` or lower in pages.
+- Focus moves inside a layout effect are undone by React's post-commit focus restore; defer them (`queueMicrotask`) as `Menu.tsx` does.
+- Motion logs a dev-only "Reduced Motion enabled" console warning under reduced motion (from `MotionConfig reducedMotion="user"`); it is not an app error.
 
 ### AGENTS.md
 `next dev` re-adds a generated block to `AGENTS.md`. Do not revert it with `git checkout`; the file

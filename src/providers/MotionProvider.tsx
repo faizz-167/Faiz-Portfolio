@@ -1,6 +1,7 @@
 "use client";
 
 import { MotionConfig } from "motion/react";
+import { Crosshair } from "@/components/motion/Crosshair";
 import { useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { ScrollTrigger, gsap, requestRefresh } from "@/lib/motion/gsap";
 import {
@@ -92,7 +93,8 @@ function onAnchorClick(event: MouseEvent) {
  *   (client-only, after hydration) and Lenis only in the motion-ok branch.
  * - `ScrollTrigger.refresh()` after `document.fonts.ready`.
  * - Lenis-aware in-page anchor scrolling.
- * Renders no DOM of its own.
+ * - The app-wide `<Crosshair />` (P8.6), once; it renders nothing on touch or
+ *   with reduced motion.
  */
 export function MotionProvider({ children }: { children: ReactNode }) {
   const lenis = useSyncExternalStore(subscribeLenis, getLenis, getServerLenis);
@@ -131,7 +133,10 @@ export function MotionProvider({ children }: { children: ReactNode }) {
 
   return (
     <MotionConfig reducedMotion="user" transition={spring}>
-      <LenisContext value={lenis}>{children}</LenisContext>
+      <LenisContext value={lenis}>
+        {children}
+        <Crosshair />
+      </LenisContext>
     </MotionConfig>
   );
 }

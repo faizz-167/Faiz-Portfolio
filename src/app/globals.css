@@ -178,7 +178,9 @@
     --cols: 4;
     --measure: 62ch;
     --measure-lede: 48ch;
-    --strip-h: 44px;
+    /* The strip is desktop-only (P8.3): 0 below 1024px, so anchor offsets and
+       [id] scroll-margin don't leave a phantom gap on phones. */
+    --strip-h: 0px;
     --dock-h: 56px;
     --touch-min: 44px; /* also the md button height */
     --control-lg: 56px; /* lg button height (design.md §6) */
@@ -210,6 +212,7 @@
   @media (width >= 1024px) {
     :root {
       --cols: 12;
+      --strip-h: 44px;
     }
   }
 
@@ -405,6 +408,15 @@
 }
 @utility border-active {
   border-width: var(--border-active);
+}
+
+/* P8.5 — open menu: the page behind the dialog does not scroll. Same rule
+   Lenis applies while stopped; this also covers native scroll (reduced motion).
+   With a classic (non-overlay) scrollbar the gutter disappears while open,
+   which nudges right-anchored fixed elements (CLS ≈ 0.0002, under the dialog).
+   `hidden` + `scrollbar-gutter: stable` was tried and shifted the page more. */
+html.menu-open {
+  overflow: clip;
 }
 
 /* ------------------------------------------------------------------ */
