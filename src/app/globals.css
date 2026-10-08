@@ -1,26 +1,383 @@
+/*
+ * Design tokens & global styles — "Build Sheet".
+ * Visual source of truth: implementation plan/design.md. Spec: specs/phase2.md.
+ * Components use the semantic tokens below (bg-surface, text-fg, border-rule, …),
+ * never raw hex, px sizes, durations or easings.
+ */
 @import "tailwindcss";
+@import "lenis/dist/lenis.css";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/* Planning docs and agent skill files mention class names; don't scan them. */
+@source not "../../implementation plan";
+@source not "../../.agents";
+@source not "../../.claude";
+
+/* P2.8 — pointer media hook for Tailwind: `pointer-fine:…` */
+@custom-variant pointer-fine (@media (pointer: fine));
+
+/* Width axis of the display face, animatable by WidthFlex (P6.5). */
+@property --wdth {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 100;
 }
 
+/* ------------------------------------------------------------------ */
+/* Tailwind theme: raw tokens (always emitted as CSS variables)        */
+/* Default palette, shadows, blur, radii, fonts, eases, type scale and  */
+/* the spacing multiplier are cleared so only these tokens exist.       */
+/* ------------------------------------------------------------------ */
+@theme static {
+  /* P2.2 — colour (design.md §2) */
+  --color-*: initial;
+  --color-ink: #0d0e0b;
+  --color-ink-2: #1a1b16;
+  --color-ink-3: #2a2b24;
+  --color-paper: #ecebe4;
+  --color-paper-2: #e0ded5;
+  --color-signal: #c6f432; /* acid lime: on ink only */
+  --color-signal-deep: #3f5c00; /* signal on paper (lime is 1.07:1 there) */
+  --color-on-signal: #152000;
+  --color-fault: #ff4d2e; /* errors on ink */
+  --color-fault-deep: #b32d15; /* errors on paper */
+
+  /* P2.5 — no shadows, no blur, square corners */
+  --shadow-*: initial;
+  --inset-shadow-*: initial;
+  --drop-shadow-*: initial;
+  --text-shadow-*: initial;
+  --blur-*: initial;
+  --radius-*: initial;
+  --radius-none: 0;
+  --radius-dot: 999px; /* status dots and diagram vias only */
+
+  /* P2.1 — font families come from next/font as --font-display/--font-text/--font-mono
+     on <html>; the font-* utilities are defined with @utility below. */
+  --font-*: initial;
+
+  /* P2.6 — easing */
+  --ease-*: initial;
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+  --ease-wipe: cubic-bezier(0.76, 0, 0.24, 1);
+
+  /* P2.3 — fluid type scale, 360px → 1600px (design.md §3.2) */
+  --text-*: initial;
+  --text-data: clamp(0.71875rem, 0.7006rem + 0.0806vw, 0.78125rem); /* 11.5 → 12.5 */
+  --text-data--line-height: 1.4;
+  --text-data--letter-spacing: 0.01em;
+  --text-data--font-weight: 400;
+  --text-small: clamp(0.875rem, 0.8569rem + 0.0806vw, 0.9375rem); /* 14 → 15 */
+  --text-small--line-height: 1.45;
+  --text-small--letter-spacing: 0em;
+  --text-small--font-weight: 400;
+  --text-body: clamp(1.0625rem, 1.0262rem + 0.1613vw, 1.1875rem); /* 17 → 19 */
+  --text-body--line-height: 1.5;
+  --text-body--letter-spacing: 0em;
+  --text-body--font-weight: 400;
+  --text-lede: clamp(1.3125rem, 1.2218rem + 0.4032vw, 1.625rem); /* 21 → 26 */
+  --text-lede--line-height: 1.35;
+  --text-lede--letter-spacing: -0.005em;
+  --text-lede--font-weight: 500;
+  --text-h3: clamp(1.625rem, 1.4435rem + 0.8065vw, 2.25rem); /* 26 → 36 */
+  --text-h3--line-height: 1.1;
+  --text-h3--letter-spacing: -0.01em;
+  --text-h3--font-weight: 600;
+  --text-h2: clamp(2.125rem, 1.5806rem + 2.4194vw, 4rem); /* 34 → 64 */
+  --text-h2--line-height: 1;
+  --text-h2--letter-spacing: -0.015em;
+  --text-h2--font-weight: 700;
+  --text-h1: clamp(2.75rem, 1.5161rem + 5.4839vw, 7rem); /* 44 → 112 */
+  --text-h1--line-height: 0.9;
+  --text-h1--letter-spacing: -0.025em;
+  --text-h1--font-weight: 800;
+  --text-mega: clamp(4rem, 1.1694rem + 12.5806vw, 13.75rem); /* 64 → 220 */
+  --text-mega--line-height: 0.82;
+  --text-mega--letter-spacing: -0.03em;
+  --text-mega--font-weight: 800;
+
+  /* P2.4 — spacing: 4px base. p-1…p-12 map to --space-1…--space-12. */
+  --spacing-*: initial;
+  --spacing-0: 0px;
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-5: 24px;
+  --spacing-6: 32px;
+  --spacing-7: 48px;
+  --spacing-8: 64px;
+  --spacing-9: 96px;
+  --spacing-10: 128px;
+  --spacing-11: 192px;
+  --spacing-12: 256px;
+
+  /* Reading measures: max-w-measure, max-w-lede */
+  --container-measure: 62ch;
+  --container-lede: 48ch;
+}
+
+/* Semantic, surface-dependent tokens exposed to Tailwind. `inline` makes the
+   utilities reference the live variables so a nested data-surface remaps them. */
 @theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-surface: var(--bg);
+  --color-fg: var(--fg);
+  --color-fg-muted: var(--fg-muted);
+  --color-rule: var(--rule);
+  --color-raised: var(--raised);
+  --color-accent: var(--accent);
+  --color-error: var(--fault-c);
+
+  --spacing-section: var(--section-y);
+  --spacing-margin: var(--margin-x);
+  --spacing-gutter: var(--gutter);
+  --spacing-touch: var(--touch-min);
+  --spacing-strip: var(--strip-h);
+  --spacing-dock: var(--dock-h);
+
+  --default-font-family: var(--font-text);
+  --default-mono-font-family: var(--font-mono);
+  --default-transition-duration: var(--dur-base);
+  --default-transition-timing-function: var(--ease-out);
 }
 
-@media (prefers-color-scheme: dark) {
+/* ------------------------------------------------------------------ */
+/* Plain CSS tokens                                                     */
+/* ------------------------------------------------------------------ */
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    /* P2.4 — spacing scale (mirrors --spacing-N) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 12px;
+    --space-4: 16px;
+    --space-5: 24px;
+    --space-6: 32px;
+    --space-7: 48px;
+    --space-8: 64px;
+    --space-9: 96px;
+    --space-10: 128px;
+    --space-11: 192px;
+    --space-12: 256px;
+
+    /* P2.4 — rhythm & grid */
+    --section-y: clamp(96px, 12vw, 192px); /* the only vertical rhythm between scenes */
+    --margin-x: clamp(16px, 4vw, 64px);
+    --gutter: clamp(12px, 1.5vw, 24px);
+    --cols: 4;
+    --measure: 62ch;
+    --measure-lede: 48ch;
+    --strip-h: 44px;
+    --dock-h: 56px;
+    --touch-min: 44px;
+
+    /* P2.5 — borders & layers */
+    --border-hair: 1px;
+    --border-active: 1.5px;
+    --z-base: 0;
+    --z-trace: 1;
+    --z-content: 2;
+    --z-chrome: 50;
+    --z-cursor: 100;
+    --z-overlay: 200;
+
+    /* P2.6 — durations (eases live in @theme as --ease-out / --ease-wipe) */
+    --dur-cut: 0ms;
+    --dur-fast: 160ms;
+    --dur-base: 320ms;
+    --dur-slow: 640ms;
+    --dur-scene: 1100ms;
+  }
+
+  @media (width >= 640px) {
+    :root {
+      --cols: 8;
+    }
+  }
+
+  @media (width >= 1024px) {
+    :root {
+      --cols: 12;
+    }
+  }
+
+  /* P2.2 — surface system. Scene sets data-surface; content colours remap. */
+  [data-surface="ink"] {
+    --bg: var(--color-ink);
+    --fg: var(--color-paper);
+    --raised: var(--color-ink-2);
+    --accent: var(--color-signal);
+    --fault-c: var(--color-fault);
+    --muted-mix: 62%;
+    color-scheme: dark;
+  }
+
+  [data-surface="paper"] {
+    --bg: var(--color-paper);
+    --fg: var(--color-ink);
+    --raised: var(--color-paper-2);
+    --accent: var(--color-signal-deep);
+    --fault-c: var(--color-fault-deep);
+    --muted-mix: 62%;
+    color-scheme: light;
+  }
+
+  [data-surface="signal"] {
+    --bg: var(--color-signal);
+    --fg: var(--color-on-signal);
+    --raised: var(--color-signal);
+    --accent: var(--color-on-signal);
+    --fault-c: var(--color-fault-deep);
+    --muted-mix: 72%; /* 62% measures 4.3:1 on lime and fails AA */
+    color-scheme: light;
+  }
+
+  [data-surface] {
+    --fg-muted: color-mix(in srgb, var(--fg) var(--muted-mix), var(--bg));
+    --rule: color-mix(in srgb, var(--fg) 16%, var(--bg));
+    --focus: var(--accent);
+    background-color: var(--bg);
+    color: var(--fg);
+  }
+
+  /* P2.7 — base layer (Tailwind preflight already sets box-sizing and margin: 0) */
+  *,
+  *::before,
+  *::after {
+    box-sizing: border-box;
+  }
+
+  html {
+    color-scheme: dark light;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    text-rendering: optimizeLegibility;
+  }
+
+  body {
+    margin: 0;
+    min-height: 100vh;
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-text);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+    font-optical-sizing: auto;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    text-wrap: balance;
+  }
+
+  p,
+  li,
+  dd,
+  figcaption,
+  blockquote {
+    text-wrap: pretty;
+  }
+
+  img,
+  picture,
+  video,
+  canvas,
+  svg {
+    display: block;
+    max-width: 100%;
+  }
+
+  ::selection {
+    background: var(--color-signal);
+    color: var(--color-on-signal);
+  }
+
+  /* P2.5 — global focus ring: 1.5px accent, 3px offset, on every surface */
+  :focus-visible {
+    outline: var(--border-active) solid var(--focus);
+    outline-offset: 3px;
+  }
+
+  /* P2.8 — reduced motion: every transition/animation resolves to its end state */
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      transition-duration: 0.01ms !important;
+      animation-duration: 0.01ms !important;
+      animation-iteration-count: 1 !important;
+      scroll-behavior: auto !important;
+    }
   }
 }
 
-body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+/* ------------------------------------------------------------------ */
+/* Utilities                                                            */
+/* ------------------------------------------------------------------ */
+
+/* Font families (P2.1/P2.3). Display carries the animatable width axis. */
+@utility font-display {
+  font-family: var(--font-display);
+  font-variation-settings: "wdth" var(--wdth);
+}
+
+@utility font-text {
+  font-family: var(--font-text);
+  font-optical-sizing: auto;
+}
+
+@utility font-mono {
+  font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums;
+}
+
+/* Named-line page grid (P2.4). Margin tracks subtract one gutter because
+   column-gap also applies between the margin tracks and the content columns. */
+@utility page-grid {
+  display: grid;
+  grid-template-columns:
+    [full-start] calc(var(--margin-x) - var(--gutter))
+    [content-start] repeat(var(--cols), minmax(0, 1fr))
+    [content-end] calc(var(--margin-x) - var(--gutter))
+    [full-end];
+  column-gap: var(--gutter);
+}
+
+@utility col-content {
+  grid-column: content;
+}
+
+@utility col-full {
+  grid-column: full;
+}
+
+/* Layer utilities — the only z-index values allowed (design.md §4). */
+@utility z-base {
+  z-index: var(--z-base);
+}
+@utility z-trace {
+  z-index: var(--z-trace);
+}
+@utility z-content {
+  z-index: var(--z-content);
+}
+@utility z-chrome {
+  z-index: var(--z-chrome);
+}
+@utility z-cursor {
+  z-index: var(--z-cursor);
+}
+@utility z-overlay {
+  z-index: var(--z-overlay);
+}
+
+/* Border widths (P2.5) */
+@utility border-hair {
+  border-width: var(--border-hair);
+}
+@utility border-active {
+  border-width: var(--border-active);
 }
