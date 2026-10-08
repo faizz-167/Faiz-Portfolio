@@ -119,6 +119,10 @@
   --spacing-11: 192px;
   --spacing-12: 256px;
 
+  /* P9.1 — hero-only line-height (leading-hero). At mega's 0.82 the "y" of
+     "Daddy's" hits "Home." when the hero line breaks; the global token stays. */
+  --leading-hero: 0.9;
+
   /* Reading measures: max-w-measure, max-w-lede */
   --container-measure: 62ch;
   --container-lede: 48ch;
@@ -440,4 +444,74 @@ html.menu-open {
     ) {
     cursor: text;
   }
+}
+
+/* ------------------------------------------------------------------ */
+/* P9 — Hero guard & fill masks                                         */
+/* HeroGuard's inline script sets data-hero-guard on the hero section   */
+/* before the first paint (motion allowed only): outline glyphs show,   */
+/* the fill (and on a first visit the build log) wait for the compile   */
+/* sequence, which sets its own state and removes the attribute.        */
+/* Fail-safe: if the sequence never arrives (JS blocked or failed), the */
+/* guard releases itself and the finished hero shows. Unlayered so it   */
+/* beats the `invisible` utility on the outline.                        */
+/* ------------------------------------------------------------------ */
+@keyframes hero-guard-show {
+  to {
+    visibility: visible;
+  }
+}
+
+@keyframes hero-guard-hide {
+  to {
+    visibility: hidden;
+  }
+}
+
+[data-hero-guard] {
+  /* Well past a normal hydration (≈0.3–1.2s on fast 4G), short of feeling broken. */
+  --hero-guard-timeout: 3s;
+}
+
+[data-hero-guard] [data-hero-part="fill"],
+[data-hero-guard="first"] [data-hero-part="log"] {
+  visibility: hidden;
+  animation: hero-guard-show 0s var(--hero-guard-timeout) forwards;
+}
+
+[data-hero-guard] [data-hero-part="outline"] {
+  visibility: visible;
+  animation: hero-guard-hide 0s var(--hero-guard-timeout) forwards;
+}
+
+/* P9.1 — the hero line spans the content columns on one line from 640px.
+   Mega (64→220) is wider than the content area there ("Daddy's Home." sets
+   7.62em in Anybody 800 at wdth 100, -0.03em, no kerning; measured), so the
+   size is capped to the content width: 100cqi / 7.7em (1% slack for font
+   rounding). Below 640px the line breaks onto two lines at full mega size. */
+[data-hero-stage] {
+  container-type: inline-size;
+}
+
+@media (width >= 640px) {
+  [data-hero-stage] [data-hero-part="line"] {
+    --hero-line-em: 7.7;
+    font-size: min(var(--text-mega), calc(100cqi / var(--hero-line-em)));
+  }
+}
+
+/* Split fill words keep their chars on one line (the narrow line box is
+   min-content wide, which would otherwise break between char boxes). */
+[data-hero-part="fill"] .hero-word {
+  white-space: nowrap;
+}
+
+/* Per-char fill masks (SplitText `mask: "chars"`): the mask box is the char's
+   line box, which at leading-hero is shorter than the glyphs (ascenders and
+   the apostrophe rise 0.086em above it, the "y" descender drops 0.06em below;
+   measured). The bleed widens the clip without changing the line box. */
+[data-hero-part="fill"] .hero-char-mask {
+  --hero-mask-bleed: 0.1em;
+  padding-block: var(--hero-mask-bleed);
+  margin-block: calc(-1 * var(--hero-mask-bleed));
 }

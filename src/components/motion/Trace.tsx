@@ -167,6 +167,13 @@ function drawVias(layer: SVGGElement, geometry: Geometry, local: boolean) {
 }
 
 export type TraceProps = {
+  /**
+   * Start gate (P9.4). While false (motion allowed) nothing is measured or drawn;
+   * flipping it to true builds the trace and pops the vias already reached, so a
+   * page can hold the trace until an intro sequence ends. Ignored under reduced
+   * motion (the finished trace shows at once). Default true.
+   */
+  armed?: boolean;
   className?: string;
 };
 
@@ -188,12 +195,14 @@ export type TraceProps = {
  * Rebuilds on resize (debounced) and after `document.fonts.ready`, then
  * requests one ScrollTrigger refresh. Purely decorative: aria-hidden.
  */
-export function Trace({ className }: TraceProps) {
+export function Trace({ armed = true, className }: TraceProps) {
   const svg = useRef<SVGSVGElement>(null);
   const routes = useRef<Array<SVGPathElement | null>>([]);
   const clips = useRef<Array<SVGPathElement | null>>([]);
   const viaLayer = useRef<SVGGElement>(null);
   const clipId = `trace${useId().replace(/[^a-zA-Z0-9]/g, "")}`;
+  /* Set while a build was skipped by the gate: the build after arming animates its pops. */
+  const held = useRef(false);
   useRefreshOnShow();
 
   useGSAP(
@@ -211,6 +220,14 @@ export function Trace({ className }: TraceProps) {
         (context) => {
           const wide = Boolean(context.conditions?.wide);
           const animate = Boolean(context.conditions?.motion);
+          if (animate && !armed) {
+            // Gated: no measuring and no ScrollTriggers while an intro sequence runs.
+            held.current = true;
+            return;
+          }
+          // The first sync after the gate opens pops the reached vias instead of cutting them in.
+          let popIn = held.current;
+          held.current = false;
           let anim: gsap.Context | null = null;
           let timer: ReturnType<typeof setTimeout> | undefined;
           let alive = true;
@@ -259,7 +276,10 @@ export function Trace({ className }: TraceProps) {
                     end: `top+=${Math.max(last, first + 1)} center`,
                     scrub: true,
                     onUpdate: (self) => sync(self.progress, false),
-                    onRefresh: (self) => sync(self.progress, true),
+                    onRefresh: (self) => {
+                      sync(self.progress, !popIn);
+                      popIn = false;
+                    },
                   },
                 });
               } else {
@@ -310,7 +330,8 @@ export function Trace({ className }: TraceProps) {
         },
       );
     },
-    { scope: svg },
+    // `armed` rebuilds everything once when the gate opens (revert + fresh build).
+    { scope: svg, dependencies: [armed], revertOnUpdate: true },
   );
 
   return (

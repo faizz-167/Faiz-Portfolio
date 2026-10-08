@@ -23,11 +23,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 
 ## Current focus
 
-- **Phase:** 9 — Hero & Statement (Phase 8 done 2026-10-08, all 5 validation criteria met)
-- **Next subtask:** P9.1
+- **Phase:** 10 — Work, BOM, Revisions, Contact (Phase 9 done 2026-10-08, all 6 validation criteria met)
+- **Next subtask:** P10.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-08 — Phase 8 complete: site chrome in `src/components/chrome/` (SiteChrome, SheetStrip, SheetLabel, Dock, Menu, Footer, nav) + `useActiveSheet`; landmarks owned by the root layout; Crosshair app-wide; lint/build pass (all routes ○); next: Phase 9 / P9.1.
+**Last updated:** 2026-10-08 — Phase 9 complete: home page `/` = `TracedScenes` (Trace with a start gate) around the Hero ("Daddy's Home." compile: guard, log, outline → fill, Dimensions, width cuts, return-visit timing) and the Statement (ScrubText); lint/build pass (all routes ○); next: Phase 10 / P10.1.
 
 ## Phase overview
 
@@ -42,7 +42,7 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 6 | Motion components | `specs/phase6.md` | done |
 | 7 | Content model & data | `specs/phase7.md` | done |
 | 8 | Site chrome | `specs/phase8.md` | done |
-| 9 | Home scenes I — Hero "Daddy's Home." & Statement | `specs/phase9.md` | todo |
+| 9 | Home scenes I — Hero "Daddy's Home." & Statement | `specs/phase9.md` | done |
 | 10 | Home scenes II — Work, BOM, Revisions, Contact | `specs/phase10.md` | todo |
 | 11 | Case study pages & architecture diagrams | `specs/phase11.md` | todo |
 | 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | todo |
@@ -154,13 +154,13 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 ### Phase 9 — Hero & Statement
 | ID | Subtask | Status | Notes |
 |---|---|---|---|
-| P9.1 | Hero static layout | todo | |
-| P9.2 | Build log | todo | |
-| P9.3 | Compile timeline + Dimensions | todo | |
-| P9.4 | Width cuts + trace start | todo | |
-| P9.5 | Reduced-motion + mobile variants | todo | |
-| P9.6 | Statement | todo | |
-| P9.7 | Return-visit timing | todo | |
+| P9.1 | Hero static layout | done | `components/home/Hero.tsx` (server: Scene `top`, TitleBlock, details) + `HeroGuard.tsx` (pre-paint inline script) + guard/fit/mask CSS in globals.css; line capped to content width ≥640px (mega is 7.62em wide, overflowed at 1280); `leading-hero` 0.9 |
+| P9.2 | Build log | done | `HeroCompile.tsx`: `<ol>` of `copy.buildLog`, `gsap.set` visibility cuts 120ms apart; last line starts the fill |
+| P9.3 | Compile timeline + Dimensions | done | Outline layer (inline word spans, one LCP candidate) + WidthFlex fill split into masked chars, yPercent 125 → 0 (masks bleed 0.1em); 3 Dimensions on the outline words/line, play via `tl.call` |
+| P9.4 | Width cuts + trace start | done | Split reverted before the cuts (no element moves → CLS 0); cuts 50/140/100 at 80ms; `Trace armed` prop + `home/TracedScenes.tsx`; hand-off one frame after the last cut (same-tick arming cost a ~50ms forced layout) |
+| P9.5 | Reduced-motion + mobile variants | done | Reduced/no-JS = server HTML; <640px: `w-min` line (two lines at any wdth), split words nowrap, log lines 1 + last two, one Dimension |
+| P9.6 | Statement | done | `components/home/Statement.tsx`: paper, ScrubText `text-h3` at lede weight, cols 2–10, mono note, left-margin via, sr-only h2 "Notes"; scrub tops out ≈45% until Phase 10 adds scenes below |
+| P9.7 | Return-visit timing | done | `home/hero-session.ts` (try/catch sessionStorage, shared with the guard script); return = no log/dims, fill at `--dur-base`, 0.71–0.74s. Validated 2026-10-08 (all 6 criteria, see phase9.md) |
 
 ### Phase 10 — Work, BOM, Revisions, Contact
 | ID | Subtask | Status | Notes |
@@ -289,6 +289,16 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-08 | Menu focus moves (open and close) run in a `queueMicrotask` after the layout effect | React's commit restores the element focused before the commit after mutation effects, undoing a focus call made in a layout-effect cleanup |
 | 2026-10-08 | Dock hide threshold ±300px/s (named constant) | Velocity-based per spec; no token exists for it |
 | 2026-10-08 | `/system` grid toggle and overlay moved from z-overlay to z-chrome; toggle sits below the strip (`top-strip mt-3`) | They painted over the menu dialog and the strip's nav |
+| 2026-10-08 | Hero line from 640px: `font-size: min(var(--text-mega), 100cqi / 7.7)` (container = the line's wrapper) | "Daddy's Home." sets 7.62em; at mega it overflowed 1280 (1370px in 1163px). Spec P9.1 keeps one line spanning the content columns |
+| 2026-10-08 | New token `--leading-hero: 0.9` (`leading-hero`); hero line sets `font-kerning: none` | Phase 2 descender note (global 0.82 unchanged); split chars can't kern, so outline, split and reverted fill share advances |
+| 2026-10-08 | Fill reveal `yPercent 125 → 0` (spec said 100); char masks bleed 0.1em (`--hero-mask-bleed`) | Masks at the 0.9em line box clipped ascenders (0.086em) and the "y" (0.06em); with the bleed, 100 left the glyph tops visible |
+| 2026-10-08 | Pre-hydration guard: `HeroGuard` inline script (Next "preventing flash" pattern, `text/plain` on the client) sets `data-hero-guard="first|return"` on the hero section; CSS shows the outline, hides fill (+ log on first visit); 3s CSS fail-safe; section `suppressHydrationWarning` | Phase 6 note: mount reveals flashed the SSR text. No-JS and reduced motion never get the guard; the outline paints at FCP so LCP stays at first paint |
+| 2026-10-08 | Split reverted when filled, before the width cuts | Cutting `--wdth` on split chars moves every char box (layout shift); one text node keeps its start point |
+| 2026-10-08 | Outline words are inline spans (not inline-block) | Inline-block words were separate LCP candidates; on mobile the later fill became a larger candidate (LCP 1223ms → 325ms) |
+| 2026-10-08 | `Trace` gains `armed?: boolean` (default true; dependency, rebuilds once) and `components/home/TracedScenes.tsx` (wrapper + `useArmTrace()`); the hero arms it one rAF after the last cut | Phase 6 note: no start API. Arming in the cut's tick forced a dirty layout inside DrawSVG's length reads |
+| 2026-10-08 | Positioning sentence = `profile.copy.availability`; secondary action "Get in touch" → `#contact` | No positioning field exists in content; `#work`/`#contact` scenes are Phase 10 (the chrome already links them) |
+| 2026-10-08 | Statement: `text-h3` size with `font-(--text-lede--font-weight)` (500), sr-only `h2` "Notes" as the scene label | design.md: serif lede→h3 size, no bold paragraphs, no eyebrow labels |
+| 2026-10-08 | Mobile log keeps lines 1 + last two; return visit fills at `--dur-base` | "ready." must stay (it starts the fill); 0.64s fill + cuts would exceed 0.8s |
 
 ## Notes for agents
 
@@ -373,6 +383,17 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 - Menu is the only `z-overlay` dialog; anything else fixed at `z-overlay` inside a page paints over it (pages come later in the DOM). Use `z-chrome` or lower in pages.
 - Focus moves inside a layout effect are undone by React's post-commit focus restore; defer them (`queueMicrotask`) as `Menu.tsx` does.
 - Motion logs a dev-only "Reduced Motion enabled" console warning under reduced motion (from `MotionConfig reducedMotion="user"`); it is not an app error.
+
+
+### Carry-forward notes from Phase 9
+- **Home page shape:** `src/app/page.tsx` renders `<TracedScenes>` (client, `components/home/TracedScenes.tsx`) with the scenes as Server Component children. It is the one positioned wrapper; it renders the single `<Trace armed>` last. Phase 10 adds Work, BOM, Revisions, Contact as further children after `<Statement />`, in page order.
+- **Via convention:** exactly one `[data-via]` per scene. Margin vias: an empty `span` `absolute top-section left-0 h-0 w-margin` (or `right-0` + `data-via="right"`) as a direct child of the Scene (see `Statement.tsx`), which lands at the content top in the centre of the margin rail. The hero's via is inside the outline layer, after "Home.".
+- **Trace start API:** `Trace armed` (default true). While false under motion it measures and draws nothing; flipping it true rebuilds once and pops reached vias. Only the hero calls `useArmTrace()`; new scenes need nothing. Under reduced motion the trace is finished regardless.
+- **Hero hooks other phases may touch:** `data-hero-part` (`line`/`fill`/`outline`/`log`), `data-hero-stage`, `data-hero-guard` (+ CSS in globals.css "P9 — Hero guard"), sessionStorage key `hero-compiled` (`home/hero-session.ts`). Don't add `data-hero-*` elsewhere.
+- **Statement scrub** needs page below it: until Phase 10 scenes exist, max scroll inks ≈45%. Re-check full ink (and reverse) in P10.7.
+- **CLS:** the hero sequence is 0; the page shows 0.0004–0.0027 from the Martian Mono swap (strip + mono labels; mono `preload: false`). Phase 13 (fonts) should decide on preloading mono or tighter fallback metrics.
+- **Mobile trace lead** at the hero via runs up between "Daddy's" and "Home." beside the full stop (touches no glyph at 390). Check in the Phase 12 breakpoint audit.
+- Validation tooling: a CDP script in the session scratchpad drove no-JS (`Emulation.setScriptExecutionDisabled`), reduced motion, JS-blocked (`Network.setBlockedURLs`), mid-sequence resize and frame/long-task timing. Clear `sessionStorage` (or use a fresh profile) to see a first visit.
 
 ### AGENTS.md
 `next dev` re-adds a generated block to `AGENTS.md`. Do not revert it with `git checkout`; the file
