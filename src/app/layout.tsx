@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Anybody, Martian_Mono, Newsreader } from "next/font/google";
 import { cn } from "@/lib/cn";
+import { MotionProvider } from "@/providers/MotionProvider";
 import "./globals.css";
 
 // Display: width axis is the concept (design.md §3.1). wght is included by default.
@@ -44,7 +45,9 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
       lang="en"
       className={cn(display.variable, text.variable, mono.variable)}
     >
-      <body data-surface="ink">{children}</body>
+      <body data-surface="ink">
+        <MotionProvider>{children}</MotionProvider>
+      </body>
     </html>
   );
 }

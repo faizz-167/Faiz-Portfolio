@@ -312,6 +312,12 @@
     outline-offset: 3px;
   }
 
+  /* P5.5 — in-page jumps clear the fixed sheet strip without JS / under reduced
+     motion. Lenis honours this margin too; MotionProvider tops it up to --strip-h. */
+  [id] {
+    scroll-margin-top: var(--strip-h);
+  }
+
   /* P2.8 — reduced motion: every transition/animation resolves to its end state */
   @media (prefers-reduced-motion: reduce) {
     *,
