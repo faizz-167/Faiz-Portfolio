@@ -219,6 +219,30 @@ export function buildTracePath(
   return { d, length, viaProgress, points, along, schedule };
 }
 
+/**
+ * Drawn fraction of the path (0–1) at scrub progress `p` (0–1 between the first
+ * and last scheduled vertex). Piecewise linear over `schedule`; used as the
+ * ease of a single DrawSVG tween, so the whole draw is one tween whatever the
+ * vertex count.
+ */
+export function drawnFractionAt(route: Pick<TracePath, "schedule" | "along" | "length">, p: number) {
+  const { schedule, along, length } = route;
+  const first = schedule[0] ?? 0;
+  const last = schedule[schedule.length - 1] ?? first;
+  if (length <= 0 || last <= first) return p >= 1 ? 1 : 0;
+  const t = first + Math.min(1, Math.max(0, p)) * (last - first);
+  for (let k = 1; k < schedule.length; k++) {
+    const s0 = schedule[k - 1]!;
+    const s1 = schedule[k]!;
+    if (t > s1) continue;
+    const a0 = along[k - 1]!;
+    const a1 = along[k]!;
+    const local = s1 > s0 ? (t - s0) / (s1 - s0) : 1; // zero-span run: drawn whole
+    return (a0 + (a1 - a0) * local) / length;
+  }
+  return 1;
+}
+
 /** A short vertical lead of `length` px arriving at the anchor from above (mobile). */
 export function buildLocalSegment(anchor: Point, length: number) {
   return `M${round(anchor.x)} ${round(anchor.y - length)} L${round(anchor.x)} ${round(anchor.y)}`;

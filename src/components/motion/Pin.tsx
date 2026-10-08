@@ -54,6 +54,13 @@ export function Pin({ children, className, trackClassName }: PinProps) {
           scrollTrigger: {
             trigger: sectionEl,
             pin: true,
+            /*
+             * Transform pinning instead of position: fixed. Fixed pinning drew
+             * continuously but Chrome scored each fixed ↔ static switch as a
+             * layout shift (0.24 + 0.21 on /system). Lenis drives the scroll on
+             * gsap.ticker, so the counter-transform lands in the same frame.
+             */
+            pinType: "transform",
             start: "top top",
             end: () => `+=${distance()}`,
             scrub: 1,

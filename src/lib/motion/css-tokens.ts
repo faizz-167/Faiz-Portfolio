@@ -1,28 +1,20 @@
 /**
- * Runtime reads of px tokens defined in globals.css (`--space-*`, `--margin-x`,
- * `--border-active`…), so JS geometry (Trace, Dimension, Magnetic) uses the same
- * values as CSS instead of duplicating numbers.
+ * Runtime reads of px tokens defined in globals.css (`--space-*`, `--margin-x`…),
+ * so JS geometry (Trace, Dimension, Magnetic) uses the same values as CSS
+ * instead of duplicating numbers.
+ *
+ * Only tokens whose computed value is a px length can be read: px literals
+ * (`--space-*`) or custom properties registered with `@property … <length>`
+ * (`--margin-x`), which the browser resolves (clamp/vw) to px. Anything else
+ * throws, so a token that changes shape fails loudly instead of reading as 0.
  *
  * Browser-only: call from effects / event handlers / observers, never during
- * render (ensureStatic prerender has no `window`).
+ * render (ensureStatic prerender has no `window`). A pure style read: it never
+ * writes, so callers can batch it with other reads.
  */
-
-/** Resolved px value of a length custom property on `element` (default <html>). 0 if unset. */
 export function readPxToken(name: `--${string}`, element?: Element) {
-  const el = element ?? document.documentElement;
-  const raw = getComputedStyle(el).getPropertyValue(name).trim();
-  if (!raw) return 0;
-  const n = Number.parseFloat(raw);
-  if (raw.endsWith("px") || /^-?[\d.]+$/.test(raw)) return Number.isFinite(n) ? n : 0;
-  // clamp()/calc()/rem: let the browser resolve it on a probe.
-  return resolveLength(raw, el);
-}
-
-function resolveLength(value: string, parent: Element) {
-  const probe = document.createElement("div");
-  probe.style.cssText = `position:absolute;visibility:hidden;inline-size:${value};block-size:0`;
-  parent.appendChild(probe);
-  const px = probe.getBoundingClientRect().width;
-  probe.remove();
-  return px;
+  const raw = getComputedStyle(element ?? document.documentElement).getPropertyValue(name).trim();
+  const px = /^(-?[\d.]+)px$/.exec(raw);
+  if (!px?.[1]) throw new Error(`readPxToken: ${name} is "${raw}", not a px length`);
+  return Number.parseFloat(px[1]);
 }

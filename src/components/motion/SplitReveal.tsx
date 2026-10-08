@@ -78,8 +78,12 @@ export function SplitReveal<E extends ElementType = "div">({
           autoSplit: true,
           onSplit(self) {
             const units = self[split];
-            return gsap.from(units, {
-              yPercent: 110,
+            // Hidden state as an explicit set (not a from-tween): every unit's transform
+            // is parsed here, at split time, instead of lazily as each staggered child
+            // starts mid-scroll (measured ~50ms of getComputedStyle per second at 4× CPU).
+            gsap.set(units, { yPercent: 110 });
+            return gsap.to(units, {
+              yPercent: 0,
               duration: durationsS.slow,
               ease: gsapEases.out,
               delay,

@@ -5,6 +5,7 @@ import { surfaces, type Surface } from "@/components/layout/Scene";
 import {
   buildLocalSegment,
   buildTracePath,
+  drawnFractionAt,
   rectsPath,
   type RailSide,
   type TraceAnchor,
@@ -68,7 +69,6 @@ function surfaceOf(el: Element, fallback: Surface): Surface {
  * the layer is not laid out (hidden route under <Activity>).
  */
 function measure(scope: HTMLElement): Geometry | null {
-  // The --margin-x probe writes once, so it goes first; everything after is pure reads.
   const marginX = readPxToken(traceTokens.margin, scope);
   const box = scope.getBoundingClientRect();
   if (box.width === 0 || box.height === 0) return null;
@@ -244,12 +244,15 @@ export function Trace({ className }: TraceProps) {
                 };
                 gsap.set(pads, { scale: 0, transformOrigin: "50% 50%" });
                 gsap.set(routePaths, { drawSVG: "0% 0%" });
-                // Scheduled draw: timeline time = layer y under the viewport centre,
-                // so the head tracks the centre line (trace-path.ts scheduleDraw).
-                const { schedule, along, length } = geometry.route;
+                // One DrawSVG tween; its ease maps scrub progress to drawn length so
+                // the head tracks the viewport centre (trace-path.ts scheduleDraw).
+                // 60+ per-segment tweens cost ~60ms of lazy init (getTotalLength ×3 each).
+                const { schedule } = geometry.route;
                 const first = schedule[0] ?? 0;
                 const last = schedule[schedule.length - 1] ?? first;
-                const draw = gsap.timeline({
+                gsap.to(routePaths, {
+                  drawSVG: "0% 100%",
+                  ease: (p: number) => drawnFractionAt(geometry.route, p),
                   scrollTrigger: {
                     trigger: scope,
                     start: `top+=${first} center`,
@@ -259,15 +262,6 @@ export function Trace({ className }: TraceProps) {
                     onRefresh: (self) => sync(self.progress, true),
                   },
                 });
-                for (let k = 1; k < schedule.length; k++) {
-                  const from = schedule[k - 1]! - first;
-                  const to = schedule[k]! - first;
-                  draw.to(
-                    routePaths,
-                    { drawSVG: `0% ${length > 0 ? (along[k]! / length) * 100 : 100}%`, duration: to - from, ease: "none" },
-                    from,
-                  );
-                }
               } else {
                 leads.forEach((lead, i) => {
                   const via = geometry.vias[i];

@@ -35,7 +35,11 @@ const dimensionTokens = {
 
 const dimensionClasses = {
   svg: "pointer-events-none absolute inset-0 size-full overflow-visible text-fg-muted",
-  stroke: "fill-none stroke-current [stroke-width:var(--border-hair)] [vector-effect:non-scaling-stroke]",
+  /*
+   * No vector-effect: the SVG is never scaled (no viewBox), and anime.js reads
+   * getCTM() on every draw frame for non-scaling-stroke paths (forced layout).
+   */
+  stroke: "fill-none stroke-current [stroke-width:var(--border-hair)]",
   label: "fill-current font-mono text-data",
 } as const;
 

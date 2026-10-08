@@ -47,7 +47,7 @@ export function ScrubText<E extends ElementType = "p">({
       const mm = gsap.matchMedia();
       mm.add(MOTION_OK_QUERY, () => {
         const { words } = SplitText.create(el, { type: "words", tag: "span", aria: "none" });
-        gsap.fromTo(
+        const scrub = gsap.fromTo(
           words,
           { opacity: START_OPACITY },
           {
@@ -62,6 +62,9 @@ export function ScrubText<E extends ElementType = "p">({
             },
           },
         );
+        // Initialise every staggered child now (split time) rather than one by one
+        // as the scrub reaches it mid-scroll; ScrollTrigger then sets the real progress.
+        scrub.progress(1).progress(0);
       });
     },
     { scope: root },

@@ -15,6 +15,14 @@
 /* P2.8 — pointer media hook for Tailwind: `pointer-fine:…` */
 @custom-variant pointer-fine (@media (pointer: fine));
 
+/* Page margin as a registered length, so getComputedStyle returns resolved px
+   (the Trace reads it on every rebuild without a layout probe). */
+@property --margin-x {
+  syntax: "<length>";
+  inherits: true;
+  initial-value: 0px;
+}
+
 /* Width axis of the display face, animatable by WidthFlex (P6.5). */
 @property --wdth {
   syntax: "<number>";
