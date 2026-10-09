@@ -23,11 +23,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 
 ## Current focus
 
-- **Phase:** 11 — Case study pages & architecture diagrams (Phase 10 done 2026-10-09, all 7 validation criteria met)
-- **Next subtask:** P11.1
+- **Phase:** 12 — Responsive, accessibility & reduced motion (Phase 11 done 2026-10-09, all 6 validation criteria met)
+- **Next subtask:** P12.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-09 — Phase 10 complete: home `/` now runs Hero → Statement → Work index → Bill of materials → Revisions → Contact (footer folded in), six vias, trace ends in the stamp; lint/build pass (all routes ○, no revalidate); next: Phase 11 / P11.1.
+**Last updated:** 2026-10-09 — Phase 11 complete: `/work/[slug]` case pages (4 static, unknown → 404) with the architecture diagram engine (layout tests 38/38), anime.js draw-in and callouts, text alternative, arrival wipe; lint/test/build pass; next: Phase 12.
 
 ## Phase overview
 
@@ -44,7 +44,7 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 8 | Site chrome | `specs/phase8.md` | done |
 | 9 | Home scenes I — Hero "Daddy's Home." & Statement | `specs/phase9.md` | done |
 | 10 | Home scenes II — Work, BOM, Revisions, Contact | `specs/phase10.md` | done |
-| 11 | Case study pages & architecture diagrams | `specs/phase11.md` | todo |
+| 11 | Case study pages & architecture diagrams | `specs/phase11.md` | done |
 | 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | todo |
 | 13 | Performance, SEO & production hardening | `specs/phase13.md` | todo |
 
@@ -176,13 +176,13 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 ### Phase 11 — Case pages & diagrams
 | ID | Subtask | Status | Notes |
 |---|---|---|---|
-| P11.1 | Route + static params + metadata | todo | |
-| P11.2 | Layout engine | todo | |
-| P11.3 | Renderer | todo | |
-| P11.4 | anime.js sequence + callouts | todo | |
-| P11.5 | Text alternative | todo | |
-| P11.6 | Case layout | todo | |
-| P11.7 | Page transition | todo | |
+| P11.1 | Route + static params + metadata | done | `app/work/[slug]/page.tsx`: 4 slugs prerendered (○); unknown and in-progress slugs → `notFound()` (404). No `dynamicParams` (build error under Cache Components, see Decisions). Metadata title + description; OG image left to Phase 13 |
+| P11.2 | Layout engine | done | `diagram/layout.ts` (pure): fixed 1200-wide viewBox, ports and gutter channels 6 apart, a two-turn route through a row gutter when a one-turn route would cross a node (ERP ingest→db), 45° chamfers, labels on the longest segment (parallel labels nudged apart), BFS draw steps. `npm test`: 38 `node:test` cases over all 4 diagrams |
+| P11.3 | Renderer | done | `diagram/{ArchitectureDiagram,DiagramNode,DiagramEdge}.tsx` (server). Shapes by kind; `worker` = double left rule (owner decision). Owned = signal corner triangle; legend: Built by me, team, Async. `thumb` variant wired into the work-row panel (owner decision) |
+| P11.4 | anime.js sequence + callouts | done | `diagram/DiagramStage.tsx` (client): IntersectionObserver → nodes stagger, edges `createDrawable` by step, arrows/labels fade; lines restored after (async dashes return). Hover/focus lights edges + travelling dash, shows callout (= aria-describedby), dims the rest; Escape clears. State CSS in globals.css "P11.3–P11.4" |
+| P11.5 | Text alternative | done | `<details>` "Read the diagram as text", one sentence per edge ("A → B (protocol, async)"). SVG is `role="group"` + title/desc, not `img` (see Decisions) |
+| P11.6 | Case layout | done | `case/CaseScenes.tsx`: Sheet 01 title block (ink, h1 + summary + TitleBlock sized to one row), Sheet 02 System (ink), Sheet 03 Notes (paper: body at 62ch, Measurements Spec, Links, Next drawing → wraps). Status = "Live" with dot if `live`, else "Complete". Selector `nextCaseProject` |
+| P11.7 | Page transition | done | `app/work/template.tsx` + `motion/RouteWipe.tsx`: on arrival at a case page (not a hard load) scroll to top (Lenis immediate), `requestRefresh()`, signal panel `scaleY` 1→0 over 0.6s via Motion `animate()` from a layout effect (see Decisions). Case → index has no wipe |
 
 ### Phase 12 — Responsive & a11y
 | ID | Subtask | Status | Notes |
@@ -315,6 +315,13 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-09 | `src/types/css-custom-properties.d.ts`: React `CSSProperties` accepts `--*` keys | Typed inline custom properties (`--email-chars`) without a cast |
 | 2026-10-09 | Work rows call `requestRefresh()` when the open row changes | Rows below move every scroll-driven trigger (pin, rule draws, sheet tracker), also under reduced motion where the Trace does not refresh |
 | 2026-10-09 | Resume link uses `Link external` (new tab, ↗) | It is a PDF in /public; next/link would try a client route |
+| 2026-10-09 | Case pages: no `export const dynamicParams = false`; the page calls `notFound()` for unknown or in-progress slugs | Next 16.4 fails the build with `dynamicParams` under `cacheComponents` (docs: migrating-to-cache-components). Unknown slugs still return 404 |
+| 2026-10-09 | Diagram `<svg role="group">` with `<title>`/`<desc>` via aria-labelledby/-describedby, not `role="img"` | An img role makes its children presentational, which would hide the focusable node buttons (spec P11.4/P11.5 conflict) |
+| 2026-10-09 | `worker` nodes = rect with a double left rule | Data uses `worker`; spec listed no shape (owner decision) |
+| 2026-10-09 | Work-row panel shows `ArchitectureDiagram variant="thumb"` when a case project has no cover | Phase 10 left the preview fallback to Phase 11 (owner decision) |
+| 2026-10-09 | Route wipe uses Motion `animate()` on an always-rendered panel, started in a layout effect, instead of `AnimatePresence` | Next prerenders prefetched routes hidden under `<Activity>`, so mount ≠ arrival; only the layout effect (runs on show) knows. A state-driven AnimatePresence would paint the page for one frame before the cover |
+| 2026-10-09 | Wipe plays on arrival at `/work/*` only (index → case, case → case); case → index has none | A home template would remount the home page under its Activity cache; the spec scopes the template to `/work/*` |
+| 2026-10-09 | `npm test` = `node --test` over `src/**/*.test.ts` | Spec asks for layout-engine unit tests with `node:test`; type stripping, no new package |
 
 ## Notes for agents
 
@@ -425,6 +432,15 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 - **Validation harness:** headless Chrome needs `--blink-settings=primaryPointerType=4,primaryHoverType=2,availablePointerTypes=4,availableHoverTypes=2` to report `(hover: hover)`/`(pointer: fine)`; `Emulation.setEmulatedMedia` ignores hover/pointer. `window.scrollTo` fights Lenis, so drive scroll with `mouseWheel` events. `main svg[preserveAspectRatio=none]` is the trace (the hero has other SVGs).
 - **BOM at 360:** the column-header row sits inside an `sr-only` thead (1×1px, clipped); it measures 12px past the content edge in `getBoundingClientRect` but is not visible (scrollWidth 360). Not an overflow.
 
+### Carry-forward notes from Phase 11
+- **Case pages:** `src/app/work/[slug]/page.tsx` → `components/case/CaseScenes.tsx` (scenes `top`, `drawing`, `notes`; sheets 01–03). Root `<footer>` renders below. Selectors: `nextCaseProject(slug)`.
+- **Diagram:** `components/diagram/` — `layout.ts` (pure, `npm test`), server `ArchitectureDiagram` (`variant` full | thumb), client `DiagramStage`. Hooks: `[data-diagram]`, `[data-node]`, `[data-edge]` (+ `data-step`, `data-from/to`, `data-async`), `[data-callout]`; state CSS in globals.css "P11.3–P11.4". No ScrollTriggers (IntersectionObserver).
+- **Diagram at narrow widths:** `min-w-[64rem]` inside a labelled, focusable `overflow-x-auto` region (node text ≈ 11px at 360). Phase 12 may prefer a transposed mobile layout; the engine takes any viewBox width.
+- **Font metric:** Martian Mono advance = 0.70em (measured), `diagramMetrics.monoAdvance`; label wrapping depends on it.
+- **Route wipe:** `motion/RouteWipe.tsx` decides "arrival" in a layout effect, because prefetched routes are prerendered hidden under Activity. Hard loads (document navigation entry path) keep native scroll and get no wipe. A case page re-shown from Activity also wipes.
+- **Not verified in a browser:** reduced-motion paths for the draw-in, flow dash and wipe (the DevTools MCP emulate tool has no reduced-motion option). Code paths skip all three; Phase 12 should confirm.
+- **Dev CSS cache** went stale again after the globals.css edit (`rm -rf .next/dev` + restart fixed it).
+
 ### AGENTS.md
 `next dev` re-adds a generated block to `AGENTS.md`. Do not revert it with `git checkout`; the file
 itself says reverting only re-creates the change. Leave it as `next dev` writes it.
@@ -444,7 +460,8 @@ itself says reverting only re-creates the change. Leave it as `next dev` writes 
    transition (Phase 11.7); it is the one place where state reset is guaranteed.
 4. **`generateStaticParams` must return at least one param** (empty array errors). `params` is a
    `Promise` — `await params`. Use the global `PageProps<'/work/[slug]'>` / `LayoutProps<'/'>`
-   helpers (no import needed). Set `export const dynamicParams = false` so unknown slugs 404.
+   helpers (no import needed). **`dynamicParams` is not allowed with Cache Components (build
+   error)**: call `notFound()` for unknown params instead (corrected in Phase 11).
 5. **`export const ensureStatic = 'navigation'`** (new segment config) guarantees a route's complete
    output is static; validated in dev and build. Put it on the root layout so the whole site must
    stay static. Not allowed in client components.

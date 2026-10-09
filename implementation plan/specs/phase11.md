@@ -27,7 +27,8 @@ Phases 7 and 10.
 - `src/app/work/[slug]/page.tsx`; read the Next 16 docs for `generateStaticParams`, params typing
   (`PageProps<"/work/[slug]">` style global helpers, params may be a Promise) and `notFound()`.
 - `generateMetadata` → title, description from `summary`, OG image (Phase 13).
-- `export const dynamicParams = false`; `generateStaticParams` returns every non-in-progress slug (must be ≥ 1).
+- `generateStaticParams` returns every non-in-progress slug (must be ≥ 1). Unknown or in-progress slugs
+  call `notFound()` (`dynamicParams` is a build error under Cache Components — Decisions log 2026-10-09).
 - See status.md "Next 16.4 differences" items 2–5 (Activity, template remount, params Promise, ensureStatic).
 
 ### P11.2 — Layout engine (pure TS, unit-testable)
@@ -39,7 +40,7 @@ Phases 7 and 10.
 ### P11.3 — Renderer (server component for markup, client wrapper for interaction)
 - Node shapes by kind (all square-cornered): service = rect; db = rect with double top rule;
   queue = rect with internal ticks; cache = dashed rect; external = rect with hairline offset frame;
-  client/edge = rect with open side. Labels in mono.
+  client/edge = rect with open side; worker = rect with double left rule. Labels in mono.
 - Edge labels (protocol) on the longest segment; async edges dashed.
 - Colours: strokes `--fg`, rules `--rule`, active path `--color-signal`.
 - **Ownership:** nodes with `owned: true` get a signal corner mark and a legend entry "Built by me";
@@ -55,7 +56,8 @@ Phases 7 and 10.
 
 ### P11.5 — Text alternative
 Below the diagram, a `<details>` "Read the diagram as text" listing each edge:
-"Client → API gateway (HTTPS)". SVG has `role="img"` + `<title>`/`<desc>` summary.
+"Client → API gateway (HTTPS)". SVG has `role="group"` (an `img` role would hide the focusable nodes)
++ `<title>`/`<desc>` summary via aria-labelledby/-describedby.
 
 ### P11.6 — Case layout
 - Header: TitleBlock (Project, Year, Role, Stack, Status) + title in `h1` display.
@@ -63,15 +65,22 @@ Below the diagram, a `<details>` "Read the diagram as text" listing each edge:
   (no giant-number stat cliché), links, and "Next drawing →" link to the next project.
 
 ### P11.7 — Transition
-Motion `AnimatePresence` wipe in `template.tsx` for `/work/*` (signal panel `scaleY` wipe, 0.6s),
-reduced motion → instant. Ensure Lenis scrolls to top on route change and ScrollTrigger refreshes.
+Motion wipe in `work/template.tsx` for `/work/*` (signal panel `scaleY` wipe, 0.6s), started with Motion
+`animate()` from a layout effect because prefetched routes mount hidden under Activity (Decisions log
+2026-10-09); plays on arrival at a case page; reduced motion → instant. Ensure Lenis scrolls to top on route change and ScrollTrigger refreshes.
 
 ## Validation criteria
 
-- [ ] `npm run build` statically generates every project slug; unknown slug returns 404.
-- [ ] Diagram renders without JS (static SVG) and is legible at 360px (horizontal scroll inside a
+- [x] `npm run build` statically generates every project slug; unknown slug returns 404.
+- [x] Diagram renders without JS (static SVG) and is legible at 360px (horizontal scroll inside a
       labelled scroll container is acceptable for very wide diagrams).
-- [ ] Every edge in data appears; layout engine has unit tests for routing (node built-in `node:test`).
-- [ ] Keyboard can reach every node; callouts announced.
-- [ ] Text alternative lists all edges.
-- [ ] Route transition runs at 60fps and leaves no orphan ScrollTriggers.
+- [x] Every edge in data appears; layout engine has unit tests for routing (node built-in `node:test`).
+- [x] Keyboard can reach every node; callouts announced.
+- [x] Text alternative lists all edges.
+- [x] Route transition runs at 60fps and leaves no orphan ScrollTriggers.
+
+Validated 2026-10-09: build prerenders 4 slugs, `/work/nope` and `/work/iam-backend` → 404; static HTML has
+every node, edge and text-alternative line; 360px keeps page width 360 with the drawing in a labelled
+scroll region; `npm test` 38/38; keyboard focus lights edges and shows the described callout; prod
+transition ≈58fps (max frame 23ms), pin-spacer count unchanged after 4 round trips. Reduced-motion paths
+not exercised in a browser (see status.md).

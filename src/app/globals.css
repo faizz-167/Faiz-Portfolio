@@ -558,3 +558,30 @@ html.menu-open {
     font-size: min(var(--text-mega), calc(100cqi / var(--contact-line-em)));
   }
 }
+
+/* ------------------------------------------------------------------ */
+/* P11.3–P11.4 — Architecture diagram states                          */
+/* ------------------------------------------------------------------ */
+/* DiagramStage sets data-active on the SVG and data-on on the lit node,
+   its neighbours and its edges. Colour and dim are cuts (no tween); the
+   only motion is anime.js's travelling dash on the lit edges. */
+[data-diagram] [data-node]:focus {
+  outline: none; /* the drawn [data-node-focus] rect is the ring */
+}
+[data-diagram] [data-node-focus] {
+  visibility: hidden;
+  stroke-width: 1.5;
+}
+[data-diagram] [data-node]:focus-visible [data-node-focus] {
+  visibility: visible;
+}
+[data-diagram][data-active] [data-node]:not([data-on]),
+[data-diagram][data-active] [data-edge]:not([data-on]) {
+  opacity: var(--muted-mix);
+}
+[data-diagram][data-active] [data-edge][data-on] :is([data-edge-line], [data-edge-arrow]) {
+  stroke: var(--accent);
+}
+[data-diagram][data-active] [data-edge][data-on] [data-edge-label] {
+  fill: var(--fg);
+}

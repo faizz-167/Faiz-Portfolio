@@ -1,3 +1,4 @@
+import { ArchitectureDiagram } from "@/components/diagram/ArchitectureDiagram";
 import { WorkRows, type WorkRowData } from "@/components/home/WorkRows";
 import { Container } from "@/components/layout/Container";
 import { Scene, sceneTitleId } from "@/components/layout/Scene";
@@ -32,23 +33,28 @@ function specItems(project: Project): SpecItem[] {
  */
 function RowPanel({ project }: { project: Project }) {
   const casePage = hasCasePage(project);
+  // No project has a cover yet: case-page projects show a miniature of their drawing instead
+  // (P10.3 fallback, decided in Phase 11). It is decorative; the panel text says it all.
+  const thumb = casePage && !project.cover;
   return (
-    <Stack gap={6} className="pt-5">
-      {casePage && <Spec items={specItems(project)} />}
-      <Text variant="body">{project.summary}</Text>
-      {casePage ? (
-        // /work/[slug] arrives in Phase 11; until then this link 404s.
-        <Button variant="outline" icon="arrow-right" href={`/work/${project.slug}`} className="self-start">
-          Open the drawing
-        </Button>
-      ) : (
-        project.repo && (
-          <Button variant="ghost" href={project.repo} className="self-start">
-            Repository
+    <div className="flex flex-col gap-6 pt-5 lg:grid lg:grid-cols-2 lg:gap-gutter">
+      <Stack gap={6}>
+        {casePage && <Spec items={specItems(project)} />}
+        <Text variant="body">{project.summary}</Text>
+        {casePage ? (
+          <Button variant="outline" icon="arrow-right" href={`/work/${project.slug}`} className="self-start">
+            Open the drawing
           </Button>
-        )
-      )}
-    </Stack>
+        ) : (
+          project.repo && (
+            <Button variant="ghost" href={project.repo} className="self-start">
+              Repository
+            </Button>
+          )
+        )}
+      </Stack>
+      {thumb && <ArchitectureDiagram project={project} variant="thumb" className="self-start" />}
+    </div>
   );
 }
 

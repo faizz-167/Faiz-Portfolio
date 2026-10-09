@@ -7,7 +7,8 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint && npm run validate:content",
-    "validate:content": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/validate-content.ts"
+    "validate:content": "node --disable-warning=MODULE_TYPELESS_PACKAGE_JSON scripts/validate-content.ts",
+    "test": "node --test --disable-warning=MODULE_TYPELESS_PACKAGE_JSON \"src/**/*.test.ts\""
   },
   "dependencies": {
     "@gsap/react": "^2.1.2",

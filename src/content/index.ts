@@ -65,6 +65,16 @@ export function projectSlugs(): string[] {
   return allProjects.filter(hasCasePage).map((project) => project.slug);
 }
 
+/**
+ * The case page after this one in work-index order, wrapping to the first: the
+ * "Next drawing" link. Only projects with a case page take part.
+ */
+export function nextCaseProject(slug: string): Project | undefined {
+  const cases = allProjects.filter(hasCasePage);
+  const at = cases.findIndex((project) => project.slug === slug);
+  return at < 0 ? undefined : cases[(at + 1) % cases.length];
+}
+
 export function getCapability(id: CapabilityId): Capability {
   const capability = allCapabilities.find((c) => c.id === id);
   // Unreachable: CapabilityId is derived from the same array.
