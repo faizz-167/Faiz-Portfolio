@@ -257,6 +257,7 @@ export const projects = [
   {
     slug: "academic-erp",
     title: "Smart Academic ERP & Analytics Dashboard",
+    indexTitle: "Academic ERP",
     // No year, repo or live link: the owner gave none (owner answers 2026-10-08).
     role: "Full-stack engineer",
     summary:

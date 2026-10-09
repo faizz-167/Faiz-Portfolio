@@ -54,6 +54,8 @@ export type Metric = { label: string; value: string; context?: string };
 export type Project = {
   slug: string;
   title: string;
+  /** Short name for the work index, where every title must fit one display line so it can take the width-stretch hover. Falls back to `title`. */
+  indexTitle?: string;
   /** Omitted when the owner gave no year; the UI then omits it too. */
   year?: number;
   role: string;

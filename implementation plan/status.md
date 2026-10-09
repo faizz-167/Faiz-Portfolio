@@ -23,11 +23,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 
 ## Current focus
 
-- **Phase:** 10 — Work, BOM, Revisions, Contact (Phase 9 done 2026-10-08, all 6 validation criteria met)
-- **Next subtask:** P10.1
+- **Phase:** 11 — Case study pages & architecture diagrams (Phase 10 done 2026-10-09, all 7 validation criteria met)
+- **Next subtask:** P11.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-08 — Phase 9 complete: home page `/` = `TracedScenes` (Trace with a start gate) around the Hero ("Daddy's Home." compile: guard, log, outline → fill, Dimensions, width cuts, return-visit timing) and the Statement (ScrubText); lint/build pass (all routes ○); next: Phase 10 / P10.1.
+**Last updated:** 2026-10-09 — Phase 10 complete: home `/` now runs Hero → Statement → Work index → Bill of materials → Revisions → Contact (footer folded in), six vias, trace ends in the stamp; lint/build pass (all routes ○, no revalidate); next: Phase 11 / P11.1.
 
 ## Phase overview
 
@@ -43,7 +43,7 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 7 | Content model & data | `specs/phase7.md` | done |
 | 8 | Site chrome | `specs/phase8.md` | done |
 | 9 | Home scenes I — Hero "Daddy's Home." & Statement | `specs/phase9.md` | done |
-| 10 | Home scenes II — Work, BOM, Revisions, Contact | `specs/phase10.md` | todo |
+| 10 | Home scenes II — Work, BOM, Revisions, Contact | `specs/phase10.md` | done |
 | 11 | Case study pages & architecture diagrams | `specs/phase11.md` | todo |
 | 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | todo |
 | 13 | Performance, SEO & production hardening | `specs/phase13.md` | todo |
@@ -165,13 +165,13 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 ### Phase 10 — Work, BOM, Revisions, Contact
 | ID | Subtask | Status | Notes |
 |---|---|---|---|
-| P10.1 | Work index rows | todo | |
-| P10.2 | Row expand | todo | |
-| P10.3 | Preview / touch expand | todo | |
-| P10.4 | Bill of Materials | todo | |
-| P10.5 | Revisions | todo | |
-| P10.6 | Contact "Call me, Baby" | todo | |
-| P10.7 | Scene seams + vias | todo | |
+| P10.1 | Work index rows | done | `home/WorkIndex.tsx` (server: rows + panels) + `home/WorkRows.tsx` (client); titles wrap (no WidthFlex — see Decisions), meta = year · role · team · status from data; IAM "On the drawing board", dashed rule, repo link only |
+| P10.2 | Row expand | done | `<button aria-expanded aria-controls>` disclosure, one open; Motion `layout="position"` + `AnimatePresence popLayout` fade; 120ms mouse hover-intent (real moves only); raised fill cut, others at opacity `--muted-mix`; `<noscript>` panel copies for no-JS; reset on Activity hide |
+| P10.3 | Preview / touch expand | done | No project has a `cover`, so no preview renders; HoverPreview + inline touch image are wired only for rows with a cover. ArchitectureDiagram thumb fallback left to Phase 11 |
+| P10.4 | Bill of Materials | done | `home/Materials.tsx`: table + caption h2, tbody per category (drawn hairline + h3), alternating raised rows in `--fg`, Used in from `capabilityUsage`, Qty = build year − since + 1; <640px rows become stacked blocks via `data-label` |
+| P10.5 | Revisions | done | `home/Revisions.tsx`: article cards in `Pin` (row of lede-wide cards, --space-12 gap, `lg:pt-strip`), vertical list otherwise; one scene via outside the track |
+| P10.6 | Contact "Call me, Baby" | done | `home/Contact.tsx` + `LocalTime.tsx`: contact lines (SplitReveal, first line capped to one line ≥640), email WidthFlex hover + Magnetic + CopyButton + mailto (size fitted to the line), title block + folded footer (`FooterLinks`); root `Footer` returns null on `/`; stamp year = `BUILD_YEAR` |
+| P10.7 | Scene seams + vias | done | Six scenes, one via each, in page order; Trace scroll ends clamped so the draw completes at the stamp. Validated 2026-10-09 (all 7 criteria, see phase10.md) |
 
 ### Phase 11 — Case pages & diagrams
 | ID | Subtask | Status | Notes |
@@ -234,6 +234,7 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-08 | External (outside-service) nodes are never `owned`; enforced by `validate-content.ts` | "Built by me" must only mark what the owner built |
 | 2026-10-08 | BOM has no version/Spec column | Owner decision: no versions to show |
 | 2026-10-08 | Home page: footer folded into the Contact title block (P10.6); root Footer stays on other routes | Owner decision — signal Contact stays the last thing on the home page |
+| 2026-10-08 | Mono font preload deferred to Phase 13 (P13.3) | Owner decision; CLS 0.0027 at worst, weigh against LCP there |
 | 2026-10-08 | Brief's "post-production artist" hero line treated as a paste mismatch | Subject is a full-stack engineer; hero uses compile/build language instead |
 | 2026-10-08 | Tailwind default namespaces cleared: `--color-*`, `--shadow-*`, `--inset-shadow-*`, `--drop-shadow-*`, `--text-shadow-*`, `--blur-*`, `--radius-*`, `--font-*`, `--ease-*`, `--text-*`, `--spacing-*` (incl. the numeric multiplier) | Enforces "tokens only": `p-5` = `--space-5` (24px), no `shadow-*`, `red-500`, `rounded-lg`, `p-7.5`. Unknown numeric spacing classes now generate nothing |
 | 2026-10-08 | `font-display` / `font-text` / `font-mono` are `@utility` rules, not `@theme --font-*` keys | next/font owns `--font-display/-text/-mono` on `<html>`; a theme key of the same name would self-reference. Utilities also carry `"wdth" var(--wdth)` (registered `@property`), optical sizing, and `tabular-nums` |
@@ -299,6 +300,21 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-08 | Positioning sentence = `profile.copy.availability`; secondary action "Get in touch" → `#contact` | No positioning field exists in content; `#work`/`#contact` scenes are Phase 10 (the chrome already links them) |
 | 2026-10-08 | Statement: `text-h3` size with `font-(--text-lede--font-weight)` (500), sr-only `h2` "Notes" as the scene label | design.md: serif lede→h3 size, no bold paragraphs, no eyebrow labels |
 | 2026-10-08 | Mobile log keeps lines 1 + last two; return visit fills at `--dur-base` | "ready." must stay (it starts the fill); 0.64s fill + cuts would exceed 0.8s |
+| 2026-10-09 | Work index titles wrap (balanced `h1` display) and do not use WidthFlex | WidthFlex is one nowrap line by design; measured "Smart Academic ERP & Analytics Dashboard" at 2250px on a 1177px line (1280) and "Laptop Sentinel" at 370px on 328px (360). Hover feedback is the open row (raised fill) and the other titles dimming. **Owner may supply short index names** |
+| 2026-10-09 | Contact email: WidthFlex hover kept, font size capped to fit the line: `min(h2, 100cqi / (chars × em-per-char))`, em-per-char 0.9 with hover (measured 0.845 at wdth 130), 0.68 without (measured 0.636 at 100); `--email-chars` passed from data | At `h2` the address is 541px on a 328px line (360) and 1189px on 1177px when stretched (1280). Result: 52px at 1280, 19–21px on phones |
+| 2026-10-09 | Contact lines from 640px: size capped so "Call me, Baby" stays on one line (`100cqi / 7.05`; measured 6.94em); both lines use `leading-hero` (0.9) | Hero precedent for a locked literal. At mega the first line broke into "Call me," / "Baby" at 1280; at 0.82 the "y" of Baby met "for" |
+| 2026-10-09 | Contact scene sets `--fg-muted: var(--fg)` | Criterion "on-signal text ≥ 7:1"; signal muted mix is 5.9:1. Every text node measured 13.23:1 |
+| 2026-10-09 | Footer fold: on `/` the root `Footer` returns null; the Contact title block is a `<footer>` (TitleBlock + `FooterLinks`, exported from `chrome/Footer.tsx`) and the scene pads by dock + safe area below 1024px | Owner decision. The folded `<footer>` sits inside `<main>`/the section, so `/` has no `contentinfo` landmark; other routes keep the root footer |
+| 2026-10-09 | Build year is a build-time constant: `next.config.ts` `env.BUILD_YEAR` → `src/lib/build-year.ts` `BUILD_YEAR` (throws if unset) | A `'use cache'` + `cacheLife("max")` read made `/` revalidate every 30 days (build output column); the stamp is the build's year |
+| 2026-10-09 | BOM Qty = build year − `since` + 1 (inclusive) | A tool first used this year reads 1, not 0 |
+| 2026-10-09 | Work row "Scale" = the project's first metric under its own label; none when a project has no metrics | No scale field exists; never invent one |
+| 2026-10-09 | No-JS work rows: each row prints its panel in a `<noscript>` (server-rendered) | Disclosure panels need JS to open; no layout shift for JS users |
+| 2026-10-09 | Revisions: one via for the scene (left margin), not one per revision; cards are `<article>`s with an `h3` "Rev. X" | Phase 6/9 rule: one via per scene, never inside the moving Pin track |
+| 2026-10-09 | Trace scroll ends wrapped in `clamp()` (desktop draw and mobile leads) | The stamp via sits 33px below the viewport centre at full scroll (1280×800), so the draw never completed |
+| 2026-10-09 | `capabilitiesByCategory()` returns `CapabilityEntry` (`Capability & { id: CapabilityId }`), built from the literal data | Avoids an `as CapabilityId` cast when passing ids to `capabilityUsage` |
+| 2026-10-09 | `src/types/css-custom-properties.d.ts`: React `CSSProperties` accepts `--*` keys | Typed inline custom properties (`--email-chars`) without a cast |
+| 2026-10-09 | Work rows call `requestRefresh()` when the open row changes | Rows below move every scroll-driven trigger (pin, rule draws, sheet tracker), also under reduced motion where the Trace does not refresh |
+| 2026-10-09 | Resume link uses `Link external` (new tab, ↗) | It is a PDF in /public; next/link would try a client route |
 
 ## Notes for agents
 
@@ -394,6 +410,20 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 - **CLS:** the hero sequence is 0; the page shows 0.0004–0.0027 from the Martian Mono swap (strip + mono labels; mono `preload: false`). Phase 13 (fonts) should decide on preloading mono or tighter fallback metrics.
 - **Mobile trace lead** at the hero via runs up between "Daddy's" and "Home." beside the full stop (touches no glyph at 390). Check in the Phase 12 breakpoint audit.
 - Validation tooling: a CDP script in the session scratchpad drove no-JS (`Emulation.setScriptExecutionDisabled`), reduced motion, JS-blocked (`Network.setBlockedURLs`), mid-sequence resize and frame/long-task timing. Clear `sessionStorage` (or use a fresh profile) to see a first visit.
+
+
+### Carry-forward notes from Phase 10
+- **Home shape:** `src/app/page.tsx` = `TracedScenes` > Hero, Statement, WorkIndex, Materials, Revisions, Contact (ids `top`, `statement`, `work`, `materials`, `revisions`, `contact`), one `[data-via]` each, surfaces ink/paper/ink/paper/ink/signal. Contact is last; nothing renders after it on `/` (root `Footer` returns null there).
+- **Case links 404 until Phase 11:** "Open the drawing" (`/work/[slug]`) and BOM "Used in" links exist only for `hasCasePage` projects. next/link prefetches them in view, so the console shows 3–4 `404 /work/<slug>?_rsc=…` resource errors today. They should disappear once P11.1 adds the route; re-check. No route was stubbed.
+- **Work previews (open question):** no project has a `cover`, so no hover panel or touch image renders. `WorkRows` already passes covers to `HoverPreview` and shows an inline image on touch when a cover exists. The spec's fallback (miniature `ArchitectureDiagram variant="thumb"`) is Phase 11's component; decide in Phase 11 whether to add it to `WorkRowData` (e.g. a `preview: ReactNode` rendered by the server).
+- **Panels are server nodes:** `WorkIndex` builds each row's panel (Spec, summary, button) on the server and passes it as `panel: ReactNode`; the same node prints in `<noscript>`.
+- **Build year:** `BUILD_YEAR` from `@/lib/build-year` (next.config `env`). Use it for any "current year"; never `new Date()` in a Server Component.
+- **Fit caps:** display lines that must stay on one line use a container-query cap in globals.css (`[data-email-fit]`, `[data-contact-lines]`), next to the hero's. A measured em constant is only safe for locked literals; the email cap is per-character from data.
+- **Footer:** `FooterLinks({ pathname })` (chrome/Footer.tsx) is the shared plain-HTML nav. Case pages keep the root `<footer>`.
+- **Trace:** scroll ends are `clamp()`ed. Any new last via near the page end still completes. 6 pads verified on vias, in order; the desktop route is 13039px at 1280.
+- **Contrast on signal:** the Contact scene maps `--fg-muted` to `--fg`. Anything else placed on signal should do the same if the ≥ 7:1 rule applies.
+- **Validation harness:** headless Chrome needs `--blink-settings=primaryPointerType=4,primaryHoverType=2,availablePointerTypes=4,availableHoverTypes=2` to report `(hover: hover)`/`(pointer: fine)`; `Emulation.setEmulatedMedia` ignores hover/pointer. `window.scrollTo` fights Lenis, so drive scroll with `mouseWheel` events. `main svg[preserveAspectRatio=none]` is the trace (the hero has other SVGs).
+- **BOM at 360:** the column-header row sits inside an `sr-only` thead (1×1px, clipped); it measures 12px past the content edge in `getBoundingClientRect` but is not visible (scrollWidth 360). Not an overflow.
 
 ### AGENTS.md
 `next dev` re-adds a generated block to `AGENTS.md`. Do not revert it with `git checkout`; the file

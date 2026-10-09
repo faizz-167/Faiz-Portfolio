@@ -37,6 +37,9 @@ pointer-fine.
 ### P13.3
 `next/image` with AVIF/WebP, explicit sizes, `priority` only for LCP media (none in hero — text LCP).
 Fonts: preload display only; mono `preload: false`; verify `size-adjust` fallbacks avoid CLS.
+Decide the mono preload here (owner, 2026-10-08): Phase 9 measured whole-page CLS 0.0004–0.0027 from the
+Martian Mono swap (strip cells, hero CTA label). Preload it, or tune its fallback metrics, if that gets CLS to 0
+without pushing LCP past budget.
 
 ### P13.4
 - Root `metadata`: title template `"%s — <Name>"`, description, `metadataBase`.

@@ -70,7 +70,6 @@ export function Hero() {
             </GridCell>
             <GridCell span={{ base: 4, md: 8, lg: 4 }}>
               <Cluster gap={5} className="lg:justify-end">
-                {/* #work and #contact are Phase 10 scenes; the chrome already links them. */}
                 <Button variant="outline" href="#work">
                   See the work
                 </Button>

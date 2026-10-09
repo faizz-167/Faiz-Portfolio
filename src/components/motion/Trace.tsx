@@ -22,9 +22,13 @@ const NARROW_QUERY = "(max-width: 639.98px)";
 /** Resize bursts collapse into one rebuild. */
 const REBUILD_DEBOUNCE_MS = 150;
 const SVG_NS = "http://www.w3.org/2000/svg";
-/* Mobile lead: draws while its via travels from the bottom edge to the centre. */
+/*
+ * Mobile lead: draws while its via travels from the bottom edge to the centre.
+ * Ends are clamped to the page's scroll range: the last via (the Contact stamp,
+ * P10.6) sits too near the end of the page to ever reach the viewport centre.
+ */
 const LOCAL_START = "top bottom";
-const LOCAL_END = "top center";
+const LOCAL_END = "clamp(top center)";
 
 /** Tokens the geometry is built from (read at runtime, never duplicated). */
 const traceTokens = {
@@ -273,7 +277,8 @@ export function Trace({ armed = true, className }: TraceProps) {
                   scrollTrigger: {
                     trigger: scope,
                     start: `top+=${first} center`,
-                    end: `top+=${Math.max(last, first + 1)} center`,
+                    // Clamped (see LOCAL_END): the draw completes at the bottom of the page.
+                    end: `clamp(top+=${Math.max(last, first + 1)} center)`,
                     scrub: true,
                     onUpdate: (self) => sync(self.progress, false),
                     onRefresh: (self) => {

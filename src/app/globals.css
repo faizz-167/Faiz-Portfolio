@@ -515,3 +515,46 @@ html.menu-open {
   padding-block: var(--hero-mask-bleed);
   margin-block: calc(-1 * var(--hero-mask-bleed));
 }
+
+/* ------------------------------------------------------------------ */
+/* P10.6 — Contact email                                                */
+/* The email is one display line (WidthFlex: nowrap) that stretches to  */
+/* wdth 130 on hover. At h2 it is wider than the content area below     */
+/* ≈1400px (541px on a 328px line at 360; 1189px on 1177px at 1280 when */
+/* stretched; measured), so its size is capped to fit the line:         */
+/* characters × em per character, from the address length the component */
+/* passes in --email-chars. Em per character, Anybody 700 with h2       */
+/* tracking (measured on this address): 0.845 at wdth 130, 0.636 at    */
+/* 100; each rounded up for other addresses. Without hover the line     */
+/* never stretches, so it is sized for rest width.                      */
+/* ------------------------------------------------------------------ */
+[data-email-fit] {
+  container-type: inline-size;
+}
+
+[data-email-fit] [data-email-line] {
+  --email-em-per-char: 0.68;
+  font-size: min(var(--text-h2), 100cqi / (var(--email-chars) * var(--email-em-per-char)));
+}
+
+@media (hover: hover) and (pointer: fine) {
+  [data-email-fit] [data-email-line] {
+    --email-em-per-char: 0.9;
+  }
+}
+
+/* P10.6 — the first contact line ("Call me, Baby", a locked literal) holds
+   on one line from 640px. In mega it sets 6.94em (Anybody 800, wdth 100,
+   -0.03em; measured at 1280 and 1600), wider than the content area, so
+   both lines take the size that fits it (1.5% slack); the second line wraps
+   at that size. Below 640px both wrap at full mega, as the hero does. */
+[data-contact-lines] {
+  container-type: inline-size;
+}
+
+@media (width >= 640px) {
+  [data-contact-lines] [data-contact-line] {
+    --contact-line-em: 7.05;
+    font-size: min(var(--text-mega), calc(100cqi / var(--contact-line-em)));
+  }
+}

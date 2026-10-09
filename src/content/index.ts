@@ -80,14 +80,20 @@ export function capabilityUsage(id: CapabilityId): Project[] {
   return allProjects.filter((project) => project.stack.includes(id));
 }
 
-/** Capabilities grouped in BOM order; within a group, the order of `capabilities.ts`. */
+/** A capability whose id is known to be one of `CapabilityId` (it came from the data). */
+export type CapabilityEntry = Capability & { id: CapabilityId };
+
+/**
+ * Capabilities grouped in BOM order; within a group, the order of `capabilities.ts`.
+ * Typed from the literal data so each id can be passed straight to `capabilityUsage`.
+ */
 export function capabilitiesByCategory(): {
   category: CapabilityCategory;
-  capabilities: Capability[];
+  capabilities: CapabilityEntry[];
 }[] {
   return categoryOrder.map((category) => ({
     category,
-    capabilities: allCapabilities.filter((c) => c.category === category),
+    capabilities: capabilities.filter((c) => c.category === category),
   }));
 }
 
