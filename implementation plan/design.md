@@ -281,11 +281,15 @@ columns 2–10. Words go from 20% to 100% ink as you scroll. One muted mono marg
 - In-progress projects (IAM backend) show "On the drawing board" with a dashed rule, no preview
   and no case page.
 
-### Bill of materials
-- Paper surface. A real `<table>` with columns Item · Qty (years) · Category · Used in. (No version column — owner decision.)
-- Grouped by category (Language, Frontend, Backend, Data, Infra, AI, Tooling) with `h3` group
-  heads and alternating `--raised` rows.
-- "Used in" links come from project data. Below 640px each row becomes a stacked spec block.
+### Services & toolkit (was: Bill of materials)
+- Paper surface, scene id `materials`, "Sheet 04 — Toolkit" (phase11b.md). Four faces: Interface,
+  Systems, AI, Tooling, each owning capability categories.
+- Readable layer (phones, no JS, reduced motion, screen readers): one block per face — drawn rule,
+  mono label + index, the face word as a display h3 with an `--accent` full stop, the paragraph, the
+  tools with years and "Used in" links in mono.
+- From 1024px with motion: the scene pins; the face word in `mega` above a full-bleed band between
+  heavy rules, a fixed `--accent` needle with diamonds, tools sliding past it like a meter (size,
+  opacity and lift follow distance only), a mono readout beside the needle.
 
 ### Revisions
 - Ink surface. Rev. C (Multimeta) → Rev. B (Zingbizz) → Rev. A (Rajalakshmi Engineering College).

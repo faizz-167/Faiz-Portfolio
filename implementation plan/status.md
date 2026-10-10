@@ -23,11 +23,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 
 ## Current focus
 
-- **Phase:** 12 — Responsive, accessibility & reduced motion (Phase 11 done 2026-10-09, all 6 validation criteria met)
+- **Phase:** 12 — Responsive, accessibility & reduced motion
 - **Next subtask:** P12.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-09 — Phase 11 complete: `/work/[slug]` case pages (4 static, unknown → 404) with the architecture diagram engine (layout tests 38/38), anime.js draw-in and callouts, text alternative, arrival wipe; lint/test/build pass; next: Phase 12.
+**Last updated:** 2026-10-09 — Phase 11b complete: toolkit gauge (pinned meter ≥1024 with motion, readable faces list elsewhere), home shows 3 projects + `/work` full index (○), placeholder screenshot plates on 3 case pages; lint/test/build pass; next: Phase 12.
 
 ## Phase overview
 
@@ -45,10 +45,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 9 | Home scenes I — Hero "Daddy's Home." & Statement | `specs/phase9.md` | done |
 | 10 | Home scenes II — Work, BOM, Revisions, Contact | `specs/phase10.md` | done |
 | 11 | Case study pages & architecture diagrams | `specs/phase11.md` | done |
+| 11b | Toolkit gauge, work archive & screenshot plates | `specs/phase11b.md` | done |
 | 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | todo |
 | 13 | Performance, SEO & production hardening | `specs/phase13.md` | todo |
 
-Dependency order: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 8 → 9 → 10 → 11 → 12 → 13.
+Dependency order: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 8 → 9 → 10 → 11 → 11b → 12 → 13.
 Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 
 ## Subtasks
@@ -183,6 +184,16 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | P11.5 | Text alternative | done | `<details>` "Read the diagram as text", one sentence per edge ("A → B (protocol, async)"). SVG is `role="group"` + title/desc, not `img` (see Decisions) |
 | P11.6 | Case layout | done | `case/CaseScenes.tsx`: Sheet 01 title block (ink, h1 + summary + TitleBlock sized to one row), Sheet 02 System (ink), Sheet 03 Notes (paper: body at 62ch, Measurements Spec, Links, Next drawing → wraps). Status = "Live" with dot if `live`, else "Complete". Selector `nextCaseProject` |
 | P11.7 | Page transition | done | `app/work/template.tsx` + `motion/RouteWipe.tsx`: on arrival at a case page (not a hard load) scroll to top (Lenis immediate), `requestRefresh()`, signal panel `scaleY` 1→0 over 0.6s via Motion `animate()` from a layout effect (see Decisions). Case → index has no wipe |
+
+### Phase 11b — Toolkit gauge, work archive & plates
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P11b.1 | Content: faces, paragraphs, project order, plate slots | done | `content/toolkit.ts` (4 faces → categories), `types.ts` `Plate`/`Plates` tuple replaces `cover`, projects reordered (ERP 2nd), 12 placeholder plates; selectors `toolkit()`, `homeProjects()`, `previewPlate()`, `caseHref()`; validator checks faces + plates |
+| P11b.2 | Toolkit gauge: readable list | done | `home/Materials.tsx` (Sheet 04 — Toolkit, h2 "Services & toolkit"): 4 face blocks (RuleDraw rule, category label + index, h3 word, paragraph, tool list with years + Used in); table gone. Shared parts in `home/ToolkitParts.tsx` |
+| P11b.3 | Toolkit gauge: pinned gauge | done | `home/ToolkitGauge.tsx` (client): ScrollTrigger pin (transform), 25vh/tool, gaussian meter (scale/opacity/lift/bar), needle + diamonds, readout keyed per tool; list sr-only + links tabindex −1 while live. Column width must be read fractionally (offsetWidth drifted 18px) |
+| P11b.4 | Home work index: three + "See all assemblies" | done | `WorkIndex` = first 3 + outline "See all assemblies" + count; `workRowData()` shared; WorkRows `preview` from plate 1 image only, `headingLevel` prop |
+| P11b.5 | All-assemblies page `/work` | done | `app/work/page.tsx` + `components/work/AllAssemblies.tsx`: ink, ○, h1 + h2 rows, back link; the `/work` template wipe also plays on arrival here |
+| P11b.6 | Screenshot plates on case pages | done | `case/CasePlates.tsx`: own ink scene "Sheet 03 — Plates" between System and Notes (Notes → Sheet 04 when plates exist); 16:10 hairline frame, corner ticks, SVG hatch placeholder (role=img), next/image path for real images. Validated 2026-10-09 (all 8 criteria, see phase11b.md) |
 
 ### Phase 12 — Responsive & a11y
 | ID | Subtask | Status | Notes |
@@ -322,6 +333,17 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-09 | Route wipe uses Motion `animate()` on an always-rendered panel, started in a layout effect, instead of `AnimatePresence` | Next prerenders prefetched routes hidden under `<Activity>`, so mount ≠ arrival; only the layout effect (runs on show) knows. A state-driven AnimatePresence would paint the page for one frame before the cover |
 | 2026-10-09 | Wipe plays on arrival at `/work/*` only (index → case, case → case); case → index has none | A home template would remount the home page under its Activity cache; the spec scopes the template to `/work/*` |
 | 2026-10-09 | `npm test` = `node --test` over `src/**/*.test.ts` | Spec asks for layout-engine unit tests with `node:test`; type stripping, no new package |
+| 2026-10-09 | Project order SpeechPath, Academic ERP, ZingDesk, Laptop Sentinel, IAM (supersedes 2026-10-08 order); home shows the first three | Owner order (phase11b.md P11b.1); order is the only control, no featured flag |
+| 2026-10-09 | Gauge readout links stay in the accessibility tree and the tab order; the visually hidden list keeps its links for screen readers but takes them out of the tab order (tabindex −1) while the gauge is live | Spec wants real, focusable readout links and the list as the screen-reader tree. Focusable links inside aria-hidden would fail, and Tab must not land on invisible list links. So the tree is the list plus the needle tool's readout (one group of 0–3 links). **Owner may prefer otherwise** |
+| 2026-10-09 | Plates are their own ink scene "Sheet 03 — Plates" (id `plates`) between System and Notes; Notes becomes "Sheet 04" when a project has plates | Spec places them after the diagram and before the notes but names no scene; a sheet of its own keeps the strip label honest. Paper would put two paper scenes in a row |
+| 2026-10-09 | Face label = the face's categories ("Language · Backend · Data · Infra"); gauge eyebrow = "Services & toolkit" + "0N / 04" | Spec asks for "a small mono label" without naming it; categories say something true |
+| 2026-10-09 | "Used in" shows `indexTitle ?? title` ("Academic ERP") in both layers | The readout has half a band of width; the BOM used the full title |
+| 2026-10-09 | `capabilitiesByCategory()` removed; `toolkit()`, `homeProjects()`, `previewPlate()`, `caseHref()` added; every case link goes through `caseHref()` | One face mapping; one place `/work/` paths are made |
+| 2026-10-09 | `WorkRows` takes `headingLevel` (h3 home, h2 on `/work`); `/work` scene id `top` | `/work` has an h1 page heading, so rows step down one level |
+| 2026-10-09 | `/work` is under `app/work/template.tsx`, so the signal wipe also plays on arrival at `/work` | Same template as case pages; no extra code. Remove by moving the archive outside the template if the owner dislikes it |
+| 2026-10-09 | Placeholder hatch is an SVG `<pattern>` (45°, 12px, `--fg-muted`), not a CSS repeating gradient | Gradients are banned (design.md §1) |
+| 2026-10-09 | design.md §7 "Bill of materials" replaced by "Services & toolkit" | The table is gone (owner request, phase11b.md); design.md must describe what ships |
+| 2026-10-10 | Gauge `--gauge-col`/`--gauge-bar` set as arbitrary properties on the band, not a global `[data-gauge-band]` rule | Turbopack dev CSS dropped the vars-only global rule (prod kept it), collapsing every column to the bar width in `next dev` |
 
 ## Notes for agents
 
@@ -440,6 +462,13 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 - **Route wipe:** `motion/RouteWipe.tsx` decides "arrival" in a layout effect, because prefetched routes are prerendered hidden under Activity. Hard loads (document navigation entry path) keep native scroll and get no wipe. A case page re-shown from Activity also wipes.
 - **Not verified in a browser:** reduced-motion paths for the draw-in, flow dash and wipe (the DevTools MCP emulate tool has no reduced-motion option). Code paths skip all three; Phase 12 should confirm.
 - **Dev CSS cache** went stale again after the globals.css edit (`rm -rf .next/dev` + restart fixed it).
+
+### Carry-forward notes from Phase 11b
+- **Toolkit:** `home/Materials.tsx` (server, readable list) wraps its list in `home/ToolkitGauge.tsx` (client). Live = `[data-live]` on the gauge root, set only ≥1024 with motion; hooks `[data-gauge-tool]`, `[data-gauge-readout]`, `[data-toolkit-word]`, `li[data-tool]`, `[data-tool-years]`, `[data-tool-usage]`. Pin length 11.5 viewports at 46 tools.
+- **Phase 12 should judge:** the readout-in-tree decision (Decisions log), and keyboard use of the gauge (only the needle tool's links are reachable by Tab while live).
+- **Images:** add `image: { src, width, height }` to a plate in `projects.ts`; plate 1 with an image also turns on the work-row hover/touch preview. Home never shows placeholders.
+- **Validation tooling:** scrolling with `window.scrollTo` works for the gauge (Lenis follows native scroll); the face changes at the midpoint between two faces' tools.
+- The dev server on :3000 was not started by this phase and went away mid-validation; production checks ran on :3111.
 
 ### AGENTS.md
 `next dev` re-adds a generated block to `AGENTS.md`. Do not revert it with `git checkout`; the file

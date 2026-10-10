@@ -4,13 +4,8 @@ import { capabilities } from "./capabilities";
 import { experience } from "./experience";
 import { profile } from "./profile";
 import { projects } from "./projects";
-import type {
-  Capability,
-  CapabilityCategory,
-  CapabilityId,
-  Project,
-  Revision,
-} from "./types";
+import { toolkitFaces } from "./toolkit";
+import type { Capability, CapabilityId, Plate, Project, Revision, ToolkitFace } from "./types";
 
 export type {
   ArchEdge,
@@ -20,9 +15,12 @@ export type {
   CapabilityCategory,
   CapabilityId,
   Metric,
+  Plate,
+  Plates,
   Profile,
   Project,
   Revision,
+  ToolkitFace,
 } from "./types";
 
 export { profile };
@@ -31,21 +29,28 @@ export { profile };
 const allProjects: readonly Project[] = projects;
 const allCapabilities: readonly Capability[] = capabilities;
 const allRevisions: readonly Revision[] = experience;
+const allFaces: readonly ToolkitFace[] = toolkitFaces;
 
-/** Bill of materials group order (design.md §7). */
-const categoryOrder: readonly CapabilityCategory[] = [
-  "language",
-  "frontend",
-  "backend",
-  "data",
-  "infra",
-  "ai",
-  "tooling",
-];
+/** How many projects the home work index lists: the first ones in project order (P11b.4). */
+const HOME_PROJECT_COUNT = 3;
 
 /** Projects in work-index order (the order of `projects.ts`), including in-progress ones. */
 export function sortedProjects(): readonly Project[] {
   return allProjects;
+}
+
+/** The projects the home work index shows: the head of the project order. */
+export function homeProjects(): readonly Project[] {
+  return allProjects.slice(0, HOME_PROJECT_COUNT);
+}
+
+/**
+ * The image a work row may preview: plate 1, only when it has an image. Placeholder plates are
+ * never previewed (P11b.4).
+ */
+export function previewPlate(project: Project): (Plate & { image: NonNullable<Plate["image"]> }) | undefined {
+  const first = project.plates?.[0];
+  return first?.image ? { ...first, image: first.image } : undefined;
 }
 
 export function getProject(slug: string): Project | undefined {
@@ -58,6 +63,11 @@ export function getProject(slug: string): Project | undefined {
  */
 export function hasCasePage(project: Project): boolean {
   return project.status !== "in-progress";
+}
+
+/** The case page's path, or undefined for a project without one. The one place `/work/` paths are made. */
+export function caseHref(project: Project): string | undefined {
+  return hasCasePage(project) ? `/work/${project.slug}` : undefined;
 }
 
 /** Slugs for /work/[slug] static params. Excludes in-progress projects (no case page). */
@@ -93,17 +103,19 @@ export function capabilityUsage(id: CapabilityId): Project[] {
 /** A capability whose id is known to be one of `CapabilityId` (it came from the data). */
 export type CapabilityEntry = Capability & { id: CapabilityId };
 
+/** A toolkit face with its tools: capabilities whose category it owns, in `capabilities.ts` order. */
+export type ToolkitFaceEntry = ToolkitFace & { index: number; tools: CapabilityEntry[] };
+
 /**
- * Capabilities grouped in BOM order; within a group, the order of `capabilities.ts`.
- * Typed from the literal data so each id can be passed straight to `capabilityUsage`.
+ * The toolkit gauge's faces in order (P11b.1). A capability's face is derived from its category
+ * through the faces' `categories` (the content validator checks every category maps to exactly
+ * one face). Typed from the literal data so each id can be passed straight to `capabilityUsage`.
  */
-export function capabilitiesByCategory(): {
-  category: CapabilityCategory;
-  capabilities: CapabilityEntry[];
-}[] {
-  return categoryOrder.map((category) => ({
-    category,
-    capabilities: capabilities.filter((c) => c.category === category),
+export function toolkit(): ToolkitFaceEntry[] {
+  return allFaces.map((face, index) => ({
+    ...face,
+    index: index + 1,
+    tools: capabilities.filter((c) => face.categories.includes(c.category)),
   }));
 }
 

@@ -1,3 +1,4 @@
+import { hasPlates } from "@/components/case/CasePlates";
 import { ArchitectureDiagram } from "@/components/diagram/ArchitectureDiagram";
 import { Container } from "@/components/layout/Container";
 import { Scene, sceneTitleId } from "@/components/layout/Scene";
@@ -6,7 +7,7 @@ import { Spec } from "@/components/type/Spec";
 import { Text } from "@/components/type/Text";
 import { Link } from "@/components/ui/Link";
 import { TitleBlock, type TitleBlockCell, type TitleBlockColumns } from "@/components/ui/TitleBlock";
-import { getCapability, type Project } from "@/content";
+import { caseHref, getCapability, type Project } from "@/content";
 
 /** Scene ids. The header must stay `top`: the strip's name links to #top. */
 const IDS = { header: "top", drawing: "drawing", notes: "notes" } as const;
@@ -89,15 +90,16 @@ export function CaseDrawing({ project }: { project: Project }) {
   );
 }
 
-/** Sheet 03 — notes: body sections, metrics as a spec list, links, next drawing (P11.6). Paper. */
+/** Sheet 03 (04 after plates) — notes: body sections, metrics as a spec list, links, next drawing (P11.6). Paper. */
 export function CaseNotes({ project, next }: { project: Project; next: Project | undefined }) {
   const links = [
     ...(project.live ? [{ label: "Live site", href: project.live }] : []),
     ...(project.repo ? [{ label: "Repository", href: project.repo }] : []),
     ...(project.links ?? []),
   ];
+  const nextHref = next && caseHref(next);
   return (
-    <Scene id={IDS.notes} sheet="Sheet 03 — Notes" surface="paper">
+    <Scene id={IDS.notes} sheet={hasPlates(project) ? "Sheet 04 — Notes" : "Sheet 03 — Notes"} surface="paper">
       <Container>
         <Stack gap={9}>
           <Text variant="h2" id={sceneTitleId(IDS.notes)}>
@@ -143,8 +145,8 @@ export function CaseNotes({ project, next }: { project: Project; next: Project |
             </section>
           )}
 
-          {next && (
-            <Link variant="plain" href={`/work/${next.slug}`} className={caseClasses.next}>
+          {nextHref && next && (
+            <Link variant="plain" href={nextHref} className={caseClasses.next}>
               <Text variant="data" tone="muted">
                 Next drawing →
               </Text>

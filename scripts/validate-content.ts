@@ -11,7 +11,8 @@ import { fileURLToPath } from "node:url";
 import { capabilities } from "../src/content/capabilities.ts";
 import { experience } from "../src/content/experience.ts";
 import { projects } from "../src/content/projects.ts";
-import type { Capability, Project, Revision } from "../src/content/types.ts";
+import { toolkitFaces } from "../src/content/toolkit.ts";
+import type { Capability, Project, Revision, ToolkitFace } from "../src/content/types.ts";
 
 const contentDir = join(dirname(fileURLToPath(import.meta.url)), "..", "src", "content");
 
@@ -30,11 +31,31 @@ function duplicates(values: readonly string[]): string[] {
 const allCapabilities: readonly Capability[] = capabilities;
 const allProjects: readonly Project[] = projects;
 const allRevisions: readonly Revision[] = experience;
+const allFaces: readonly ToolkitFace[] = toolkitFaces;
 
 for (const id of duplicates(allCapabilities.map((c) => c.id))) {
   errors.push(`capabilities: duplicate id "${id}"`);
 }
 const capabilityIds = new Set<string>(allCapabilities.map((c) => c.id));
+
+// Toolkit faces (P11b.1): a capability's face is derived from its category, so every category in
+// use must belong to exactly one face, and the faces' tool counts must sum to the capability count.
+for (const id of duplicates(allFaces.map((f) => f.id))) errors.push(`toolkit: duplicate face id "${id}"`);
+for (const category of new Set(allCapabilities.map((c) => c.category))) {
+  const owners = allFaces.filter((face) => face.categories.includes(category));
+  if (owners.length !== 1) {
+    errors.push(
+      `toolkit: category "${category}" belongs to ${owners.length} faces (${owners.map((f) => f.id).join(", ") || "none"}); expected exactly 1`,
+    );
+  }
+}
+const faceTotal = allFaces.reduce(
+  (sum, face) => sum + allCapabilities.filter((c) => face.categories.includes(c.category)).length,
+  0,
+);
+if (faceTotal !== allCapabilities.length) {
+  errors.push(`toolkit: faces hold ${faceTotal} tools, capabilities.ts has ${allCapabilities.length}`);
+}
 
 for (const slug of duplicates(allProjects.map((p) => p.slug))) {
   errors.push(`projects: duplicate slug "${slug}"`);
@@ -47,6 +68,19 @@ for (const project of allProjects) {
   for (const id of project.stack) {
     if (!capabilityIds.has(id)) errors.push(`${where}: stack id "${id}" is not in capabilities.ts`);
   }
+
+  // Plates (P11b.6): at most four (the tuple type says so too); an image needs a real size.
+  const plates = project.plates ?? [];
+  if (plates.length > 4) errors.push(`${where}: ${plates.length} plates, at most 4`);
+  plates.forEach((plate, index) => {
+    if (!plate) return;
+    if (plate.caption.trim() === "" || plate.alt.trim() === "") {
+      errors.push(`${where}: plate ${index + 1} needs a caption and alt text`);
+    }
+    if (plate.image && (plate.image.width <= 0 || plate.image.height <= 0)) {
+      errors.push(`${where}: plate ${index + 1} image needs its intrinsic width and height`);
+    }
+  });
 
   const nodeIds = project.architecture.nodes.map((n) => n.id);
   for (const id of duplicates(nodeIds)) errors.push(`${where}: duplicate architecture node id "${id}"`);
@@ -92,5 +126,5 @@ if (errors.length > 0) {
 }
 
 console.log(
-  `Content valid: ${allCapabilities.length} capabilities, ${allProjects.length} projects, ${allRevisions.length} revisions.`,
+  `Content valid: ${allCapabilities.length} capabilities in ${allFaces.length} toolkit faces, ${allProjects.length} projects, ${allRevisions.length} revisions.`,
 );

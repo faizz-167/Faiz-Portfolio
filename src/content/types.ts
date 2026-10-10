@@ -70,8 +70,38 @@ export type Project = {
   metrics: Metric[];
   architecture: { nodes: ArchNode[]; edges: ArchEdge[] };
   links?: { label: string; href: string }[];
-  cover?: { src: string; alt: string; width: number; height: number };
+  /**
+   * Up to four screenshot plates for the case page (P11b.6). The only way to attach images: the
+   * work-row preview uses plate 1, and only when it has an image.
+   */
+  plates?: Plates;
   body: { heading: string; paragraphs: string[] }[];
+};
+
+/** A screenshot plate. Without `image` it is a placeholder ("Screenshot pending"). */
+export type Plate = {
+  caption: string;
+  /** Describes the screenshot; used as the image's alt text once an image exists. */
+  alt: string;
+  /** Intrinsic size of the source image. */
+  image?: { src: string; width: number; height: number };
+};
+
+/** One to four plates; the tuple caps the count at the type level. */
+export type Plates = readonly [Plate, Plate?, Plate?, Plate?];
+
+/**
+ * A face of the toolkit gauge (P11b.1). Faces own capability categories; a capability's face is
+ * derived from its category through this one mapping (validated: each category in exactly one
+ * face).
+ */
+export type ToolkitFace = {
+  id: string;
+  /** The display word, sentence case ("Interface"); the paragraph's bold lead is `${name}.`. */
+  name: string;
+  categories: readonly CapabilityCategory[];
+  /** The paragraph after the bold lead word. */
+  paragraph: string;
 };
 
 export type Revision = {

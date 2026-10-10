@@ -1,7 +1,8 @@
 import type { Project } from "./types";
 
-// Source: implementation plan/content/owner-content.md §3. Array order is the work index order
-// (flagship systems first, side project and work in progress last — Decisions log 2026-10-08).
+// Source: implementation plan/content/owner-content.md §3. Array order is the work index order and
+// the only control over which projects home shows (the first three — P11b.1, owner order
+// 2026-10-09); it also drives the case pages' "Next drawing" link. There is no "featured" flag.
 // Metrics come only from the dossier; diagram cols/rows are the dossier's layout.
 export const projects = [
   {
@@ -92,6 +93,25 @@ export const projects = [
         { from: "redis", to: "ws", protocol: "pub/sub", async: true },
       ],
     },
+    // Placeholders until the owner supplies screenshots (P11b.6): no `image` yet.
+    plates: [
+      {
+        caption: "Patient session, recording an attempt",
+        alt: "The patient app mid-session: the in-browser recorder capturing a spoken attempt, with the exercise prompt above it.",
+      },
+      {
+        caption: "Live score feedback",
+        alt: "A scored attempt in the patient app: speech, behavioural and engagement scores delivered over WebSocket while the session continues.",
+      },
+      {
+        caption: "Therapist plan board",
+        alt: "The therapist's weekly plan as a drag-and-drop kanban board of exercises.",
+      },
+      {
+        caption: "Progress charts",
+        alt: "Charts of a patient's scores across sessions, as the therapist reviews them.",
+      },
+    ],
     body: [
       {
         heading: "The problem",
@@ -123,6 +143,91 @@ export const projects = [
         paragraphs: [
           "I built both apps, therapist and patient, in the Next.js App Router with Zustand and TanStack Query.",
           "I built the in-browser audio recorder, live score delivery over WebSocket, the drag-and-drop kanban plan board (@dnd-kit) and the progress charts (Recharts).",
+        ],
+      },
+    ],
+  },
+  {
+    slug: "academic-erp",
+    title: "Smart Academic ERP & Analytics Dashboard",
+    indexTitle: "Academic ERP",
+    // No year, repo or live link: the owner gave none (owner answers 2026-10-08).
+    role: "Full-stack engineer",
+    summary:
+      "A cloud academic system where teachers ask questions about student data in plain language, answered through an MCP server connected to PostgreSQL.",
+    stack: ["nextjs", "typescript", "azure-openai", "azure-blob", "postgresql", "mcp"],
+    metrics: [
+      {
+        label: "Bulk ingest",
+        value: "Thousands of rows",
+        context: "CSV attendance uploads with validation + de-duplication",
+      },
+    ],
+    architecture: {
+      nodes: [
+        { id: "ui", label: "Next.js dashboard", kind: "client", col: 0, row: 1, owned: true },
+        { id: "ingest", label: "CSV ingestion engine", kind: "service", col: 1, row: 2, owned: true },
+        { id: "chatbot", label: "NL query chatbot", kind: "service", col: 1, row: 0, owned: true },
+        { id: "aoai", label: "Azure OpenAI", kind: "external", col: 2, row: 0 },
+        { id: "mcp", label: "PostgreSQL MCP server", kind: "service", col: 2, row: 1, owned: true },
+        { id: "blob", label: "Azure Blob Storage", kind: "external", col: 2, row: 2 },
+        { id: "db", label: "PostgreSQL", kind: "db", col: 3, row: 1, owned: true },
+      ],
+      edges: [
+        { from: "ui", to: "chatbot" },
+        { from: "chatbot", to: "aoai", protocol: "tool calls" },
+        { from: "chatbot", to: "mcp", protocol: "MCP" },
+        { from: "mcp", to: "db", protocol: "SQL" },
+        { from: "ui", to: "ingest", protocol: "upload" },
+        { from: "ingest", to: "blob", protocol: "store CSV" },
+        { from: "ingest", to: "db", protocol: "validated rows" },
+      ],
+    },
+    // "The problem" and "What it does" are the owner's own account (2026-10-08); the last two
+    // sections restate the summary, metric and diagram edges.
+    // Placeholders until the owner supplies screenshots (P11b.6): no `image` yet.
+    plates: [
+      {
+        caption: "Analytics dashboard",
+        alt: "The dashboard's real-time attendance rates and performance trends for a department.",
+      },
+      {
+        caption: "Questions in plain language",
+        alt: "The academic assistant answering a teacher's plain-language question from live student data.",
+      },
+      {
+        caption: "Bulk attendance upload",
+        alt: "A CSV attendance file being uploaded, validated and de-duplicated before import.",
+      },
+      {
+        caption: "Department insights",
+        alt: "Department-level insight view, restricted to the signed-in teacher's department.",
+      },
+    ],
+    body: [
+      {
+        heading: "The problem",
+        paragraphs: [
+          "In many colleges, teachers and administrators run attendance, student performance and academic reports out of Excel files and manual processes. The result is delayed insight, inconsistent data, no real-time view, and students who need help being noticed too late.",
+        ],
+      },
+      {
+        heading: "What it does",
+        paragraphs: [
+          "One central system with secure access for teachers and admins, where data visibility is restricted by department. Teachers upload attendance as CSV instead of typing it in; the file is parsed and inserted into the database automatically.",
+          "Dashboards show academic analytics in real time: attendance rates, performance trends and department-level insights. An AI academic assistant answers questions in natural language using only real student data, so decisions are faster and better informed.",
+        ],
+      },
+      {
+        heading: "Questions in plain language",
+        paragraphs: [
+          "A chatbot takes a teacher's question, calls Azure OpenAI with tool calls, and reads student data through a PostgreSQL MCP server.",
+        ],
+      },
+      {
+        heading: "Bulk attendance uploads",
+        paragraphs: [
+          "CSV attendance files of thousands of rows are stored in Azure Blob Storage, validated and de-duplicated before the rows reach PostgreSQL.",
         ],
       },
     ],
@@ -225,6 +330,25 @@ export const projects = [
         { from: "queue", to: "db", protocol: "write vectors" },
       ],
     },
+    // Placeholders until the owner supplies screenshots (P11b.6): no `image` yet.
+    plates: [
+      {
+        caption: "The widget on a customer site",
+        alt: "The support bot embedded on a customer's website with one script tag, answering a visitor.",
+      },
+      {
+        caption: "Sources: scrape or upload",
+        alt: "The dashboard's sources page: a scraped site and uploaded documents queued for training.",
+      },
+      {
+        caption: "Customise the bot",
+        alt: "The bot customisation screen, including its embed domain allowlist.",
+      },
+      {
+        caption: "Insights: answered queries",
+        alt: "The insights page separating answered queries from unanswered ones.",
+      },
+    ],
     body: [
       {
         heading: "Ingestion that survives restarts",
@@ -250,72 +374,6 @@ export const projects = [
         heading: "The widget",
         paragraphs: [
           "Framework-free TypeScript, bundled with esbuild into one script. It only boots when the bot reports ready.",
-        ],
-      },
-    ],
-  },
-  {
-    slug: "academic-erp",
-    title: "Smart Academic ERP & Analytics Dashboard",
-    indexTitle: "Academic ERP",
-    // No year, repo or live link: the owner gave none (owner answers 2026-10-08).
-    role: "Full-stack engineer",
-    summary:
-      "A cloud academic system where teachers ask questions about student data in plain language, answered through an MCP server connected to PostgreSQL.",
-    stack: ["nextjs", "typescript", "azure-openai", "azure-blob", "postgresql", "mcp"],
-    metrics: [
-      {
-        label: "Bulk ingest",
-        value: "Thousands of rows",
-        context: "CSV attendance uploads with validation + de-duplication",
-      },
-    ],
-    architecture: {
-      nodes: [
-        { id: "ui", label: "Next.js dashboard", kind: "client", col: 0, row: 1, owned: true },
-        { id: "ingest", label: "CSV ingestion engine", kind: "service", col: 1, row: 2, owned: true },
-        { id: "chatbot", label: "NL query chatbot", kind: "service", col: 1, row: 0, owned: true },
-        { id: "aoai", label: "Azure OpenAI", kind: "external", col: 2, row: 0 },
-        { id: "mcp", label: "PostgreSQL MCP server", kind: "service", col: 2, row: 1, owned: true },
-        { id: "blob", label: "Azure Blob Storage", kind: "external", col: 2, row: 2 },
-        { id: "db", label: "PostgreSQL", kind: "db", col: 3, row: 1, owned: true },
-      ],
-      edges: [
-        { from: "ui", to: "chatbot" },
-        { from: "chatbot", to: "aoai", protocol: "tool calls" },
-        { from: "chatbot", to: "mcp", protocol: "MCP" },
-        { from: "mcp", to: "db", protocol: "SQL" },
-        { from: "ui", to: "ingest", protocol: "upload" },
-        { from: "ingest", to: "blob", protocol: "store CSV" },
-        { from: "ingest", to: "db", protocol: "validated rows" },
-      ],
-    },
-    // "The problem" and "What it does" are the owner's own account (2026-10-08); the last two
-    // sections restate the summary, metric and diagram edges.
-    body: [
-      {
-        heading: "The problem",
-        paragraphs: [
-          "In many colleges, teachers and administrators run attendance, student performance and academic reports out of Excel files and manual processes. The result is delayed insight, inconsistent data, no real-time view, and students who need help being noticed too late.",
-        ],
-      },
-      {
-        heading: "What it does",
-        paragraphs: [
-          "One central system with secure access for teachers and admins, where data visibility is restricted by department. Teachers upload attendance as CSV instead of typing it in; the file is parsed and inserted into the database automatically.",
-          "Dashboards show academic analytics in real time: attendance rates, performance trends and department-level insights. An AI academic assistant answers questions in natural language using only real student data, so decisions are faster and better informed.",
-        ],
-      },
-      {
-        heading: "Questions in plain language",
-        paragraphs: [
-          "A chatbot takes a teacher's question, calls Azure OpenAI with tool calls, and reads student data through a PostgreSQL MCP server.",
-        ],
-      },
-      {
-        heading: "Bulk attendance uploads",
-        paragraphs: [
-          "CSV attendance files of thousands of rows are stored in Azure Blob Storage, validated and de-duplicated before the rows reach PostgreSQL.",
         ],
       },
     ],

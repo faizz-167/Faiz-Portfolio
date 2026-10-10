@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
+import { CasePlates } from "@/components/case/CasePlates";
 import { CaseDrawing, CaseHeader, CaseNotes } from "@/components/case/CaseScenes";
 import { getProject, hasCasePage, nextCaseProject, projectSlugs } from "@/content";
 
@@ -32,6 +33,7 @@ export default async function CasePage({ params }: PageProps<"/work/[slug]">) {
     <>
       <CaseHeader project={project} />
       <CaseDrawing project={project} />
+      <CasePlates project={project} />
       <CaseNotes project={project} next={nextCaseProject(project.slug)} />
     </>
   );

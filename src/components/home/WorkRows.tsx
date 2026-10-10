@@ -16,7 +16,6 @@ import { Rule } from "@/components/layout/Rule";
 import { HoverPreview, preloadPreview, type PreviewImage } from "@/components/motion/HoverPreview";
 import { RuleDraw } from "@/components/motion/RuleDraw";
 import { WidthFlex } from "@/components/motion/WidthFlex";
-import type { Project } from "@/content";
 import { cn } from "@/lib/cn";
 import { requestRefresh } from "@/lib/motion/gsap";
 import { useReducedMotion } from "@/lib/motion/reduced-motion";
@@ -34,9 +33,16 @@ export type WorkRowData = {
   /** Year (when known), role, team, status — in that order, already filtered. */
   meta: string[];
   inProgress: boolean;
-  cover?: Project["cover"];
+  /** Plate 1's image, only when it has one (P11b.4): placeholders never preview. */
+  preview?: Omit<PreviewImage, "id">;
   /** Open-row content (Server Component output). */
   panel: ReactNode;
+};
+
+export type WorkRowsProps = {
+  rows: readonly WorkRowData[];
+  /** Row titles are headings one level below the list's heading (h2 on home, h1 on /work). */
+  headingLevel?: "h2" | "h3";
 };
 
 const rowClasses = {
@@ -59,7 +65,7 @@ const rowClasses = {
   dim: "opacity-(--muted-mix)",
   meta: "font-mono text-data text-fg-muted lg:shrink-0 lg:text-right",
   panel: "pb-6",
-  /* Touch layouts show the cover inside the open row instead of the cursor panel. */
+  /* Touch layouts show the preview inside the open row instead of the cursor panel. */
   inlineCover: "mb-5 block h-auto w-full border-hair border-fg pointer-fine:hidden",
 } as const;
 
@@ -71,9 +77,11 @@ const rowClasses = {
  * `AnimatePresence`. Without JavaScript every panel prints in a <noscript>.
  *
  * Preview: the cursor panel (HoverPreview) and the touch inline image only
- * exist for projects with a `cover`. None has one yet, so neither renders.
+ * exist for rows whose plate 1 has an image. None has one yet, so neither renders.
+ * Used by the home index (first three projects) and /work (all of them).
  */
-export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
+export function WorkRows({ rows, headingLevel = "h3" }: WorkRowsProps) {
+  const Heading = headingLevel;
   const [openId, setOpenId] = useState<string | null>(null);
   const [previewId, setPreviewId] = useState<string | null>(null);
   const intent = useRef<{ id: string; timer: ReturnType<typeof setTimeout> } | null>(null);
@@ -82,7 +90,7 @@ export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
   const baseId = useId();
   const reduced = useReducedMotion();
 
-  const covers: PreviewImage[] = rows.flatMap((row) => (row.cover ? [{ id: row.id, ...row.cover }] : []));
+  const previews: PreviewImage[] = rows.flatMap((row) => (row.preview ? [{ id: row.id, ...row.preview }] : []));
 
   const cancelIntent = () => {
     if (intent.current) clearTimeout(intent.current.timer);
@@ -111,7 +119,7 @@ export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
     if (event.pointerType === "touch") return;
     // Rows slide under a resting pointer while they animate; only a real move counts.
     if (event.movementX === 0 && event.movementY === 0) return;
-    if (row.cover) setPreviewId(row.id);
+    if (row.preview) setPreviewId(row.id);
     if (row.id === openId || row.id === suppressed.current || intent.current?.id === row.id) return;
     cancelIntent();
     intent.current = {
@@ -124,7 +132,7 @@ export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
   };
 
   const onPointerEnter = (row: WorkRowData) => (event: PointerEvent<HTMLLIElement>) => {
-    if (event.pointerType !== "touch" && row.cover) preloadPreview({ id: row.id, ...row.cover });
+    if (event.pointerType !== "touch" && row.preview) preloadPreview({ id: row.id, ...row.preview });
   };
 
   const onPointerLeave = (row: WorkRowData) => () => {
@@ -165,7 +173,7 @@ export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
               onPointerLeave={onPointerLeave(row)}
             >
               <Rule className={row.inProgress ? rowClasses.dashed : undefined} />
-              <h3>
+              <Heading>
                 <button
                   id={buttonId}
                   type="button"
@@ -191,7 +199,7 @@ export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
                   </span>
                   <span className={rowClasses.meta}>{row.meta.join(" · ")}</span>
                 </button>
-              </h3>
+              </Heading>
               <AnimatePresence initial={false} mode="popLayout">
                 {open && (
                   <motion.div
@@ -205,12 +213,12 @@ export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
                     exit={{ opacity: 0 }}
                     transition={fadeTransition}
                   >
-                    {row.cover && (
+                    {row.preview && (
                       <Image
-                        src={row.cover.src}
-                        alt={row.cover.alt}
-                        width={row.cover.width}
-                        height={row.cover.height}
+                        src={row.preview.src}
+                        alt={row.preview.alt}
+                        width={row.preview.width}
+                        height={row.preview.height}
                         sizes="(pointer: fine) 0px, 100vw"
                         className={rowClasses.inlineCover}
                       />
@@ -226,7 +234,7 @@ export function WorkRows({ rows }: { rows: readonly WorkRowData[] }) {
           );
         })}
       </RuleDraw>
-      {covers.length > 0 && <HoverPreview items={covers} activeId={previewId} surface="paper" />}
+      {previews.length > 0 && <HoverPreview items={previews} activeId={previewId} surface="paper" />}
     </LayoutGroup>
   );
 }
