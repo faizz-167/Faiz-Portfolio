@@ -1,5 +1,6 @@
 import { ArchitectureDiagram } from "@/components/diagram/ArchitectureDiagram";
-import { WorkRows, type WorkRowData } from "@/components/home/WorkRows";
+import { WorkCards } from "@/components/home/WorkCards";
+import { type WorkRowData } from "@/components/home/WorkRows";
 import { Cluster } from "@/components/layout/Cluster";
 import { Container } from "@/components/layout/Container";
 import { Scene, sceneTitleId } from "@/components/layout/Scene";
@@ -7,6 +8,7 @@ import { Stack } from "@/components/layout/Stack";
 import { Spec, type SpecItem } from "@/components/type/Spec";
 import { Text } from "@/components/type/Text";
 import { Button } from "@/components/ui/Button";
+import { PixelSeam } from "@/components/motion/PixelSeam";
 import {
   caseHref,
   getCapability,
@@ -106,12 +108,11 @@ function assemblyCount(count: number) {
 }
 
 /**
- * Sheet 03 — the work index (P10.1–P10.3, P11b.4). Ink. The first three
- * projects in project order, then a link to /work with the total.
+ * Sheet 03 — the work index (P10.1–P10.3, P11b.4, P11c.2). Ink. The first three
+ * projects in project order as staggered cards, then a link to /work with the
+ * total. /work keeps the expanding rows (`workRowData` below).
  */
 export function WorkIndex() {
-  const rows = workRowData(homeProjects());
-
   return (
     <Scene id={SCENE_ID} sheet="Sheet 03 — Assemblies" surface="ink">
       {/* Trace via: left margin rail, level with the top of the content. */}
@@ -121,8 +122,8 @@ export function WorkIndex() {
           <Text variant="h2" id={sceneTitleId(SCENE_ID)}>
             Selected assemblies
           </Text>
-          <Stack gap={6}>
-            <WorkRows rows={rows} />
+          <Stack gap={9}>
+            <WorkCards projects={homeProjects()} />
             <Cluster gap={5} align="center">
               <Button variant="outline" icon="arrow-right" href="/work">
                 See all assemblies
@@ -134,6 +135,8 @@ export function WorkIndex() {
           </Stack>
         </Stack>
       </Container>
+      {/* P11c.6: the boundary into the next scene dissolves in its colour. */}
+      <PixelSeam to="paper" seed={23} />
     </Scene>
   );
 }

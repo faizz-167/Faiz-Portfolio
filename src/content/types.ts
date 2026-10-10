@@ -121,6 +121,10 @@ export type Profile = {
   email: string;
   links: { label: string; href: string }[];
   statement: string;
+  /** The owner's portrait (P11c.5): shown once, as a plate in the Statement scene. */
+  portrait: { src: string; width: number; height: number; alt: string };
+  /** The three role words over the portrait band (P11d.3), owner-confirmed 2026-10-10. */
+  roleWords: [string, string, string];
   // Literal types: the signature lines are locked (Phase 0, P0.4) and must not drift.
   copy: {
     heroLine: "Daddy's Home.";

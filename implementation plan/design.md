@@ -19,9 +19,11 @@ lime **signal trace** runs through the whole site like a track on a circuit boar
    marks a real sequence; a "Built by me" mark shows real ownership. No decorative chrome.
 2. **One signal.** Acid lime is not a brand colour. It is the electrical signal: the trace,
    focus, the active state, the cursor, the contact sheet. If lime appears anywhere else, it is
-   a bug.
+   a bug. *Owner exception (2026-10-10):* the Statement's moving scrub band (see §7 Statement).
 3. **Type is the image.** There are no stock photos, 3D blobs or illustrations. Display type
    stretches, compresses, cuts and gets measured, and it does the work imagery usually does.
+   *Owner exception (2026-10-10):* the owner's own portrait, once, as the full-bleed band that
+   opens the Statement scene. Project screenshots live only in drawing plates.
 4. **Flat and exact.** Square corners, 1px hairlines, no shadows, no gradients, no blur, no
    glass. Depth comes from overlap, surface changes and line weight.
 5. **Motion is an edit.** Every animation is a *cut*, *wipe*, *scrub* or *trace*. Timing and
@@ -267,17 +269,27 @@ motion allowed. Text inputs keep the normal text cursor.
   repeat visit in the same session.
 
 ### Statement
-Paper surface. The statement is set in large Newsreader (`lede` to `h3` size, serif) across
-columns 2–10. Words go from 20% to 100% ink as you scroll. One muted mono margin note.
+Paper surface. It opens with the owner's portrait as a full-bleed band (85svh from 1024px), its
+pixels clearing as it enters. Across its lower third, three role words in `h1` display ink, each
+on a paper strip, sit over one ink hairline: "Systems · Retrieval · Interfaces" (owner exception,
+2026-10-10). Under the band, a mono caption strip: "Fig. 01 — Mohamed Faiz" and the margin note.
+Then the statement in large Newsreader across columns 2–10. Words go from 20% to 100% ink as you
+scroll; about three words at the leading edge pass through `--accent`, broken by a coarse pixel
+mask, and no word keeps the accent at rest.
 
 ### Work index
-- Ink surface, scene heading "Selected assemblies".
-- Rows divided by hairlines that draw in. Name in `h1` display; on the right in mono: year
-  (omitted when unknown), role, team ("Solo", "Team of 2").
-- One row open at a time. The open row gets the `--raised` fill and a spec list (Role, Stack,
-  Year, Scale), the summary and "Open the drawing →".
-- Rows that aren't open fade to `--fg-muted`. With a mouse, a preview panel follows the cursor; on
-  touch, the preview appears inside the open row.
+- Ink surface, scene heading "Selected assemblies". Home shows three **cards** (P11c, after
+  produx.design): from 1024px card 1 spans columns 1–7, card 2 columns 9–12 bottom-aligned with
+  it, card 3 columns 2–11. 6 + 6 then full at tablet; one column on mobile.
+- Each card is one link: plate 1 in a hairline frame (16:10, card 2 at 4:5; the hatched
+  placeholder until a screenshot exists), then a hidden accent square marker, the title in
+  display type, and year and role in mono. The first three stack items are mono tags.
+- Fine pointer with motion: the plate drifts with scroll and scales inside its fixed frame on
+  hover, the marker grows in front of the title, tags slide into the plate's corner, the other
+  cards fade, and the crosshair carries an "Open drawing" chip. Focus shows marker and tags.
+- "See all assemblies" and the total sit underneath. `/work` keeps the expanding rows: one open
+  at a time, `--raised` fill, spec list, summary, "Open the drawing →", cursor-following preview,
+  rows that aren't open fade to `--fg-muted`.
 - In-progress projects (IAM backend) show "On the drawing board" with a dashed rule, no preview
   and no case page.
 
@@ -319,6 +331,11 @@ columns 2–10. Words go from 20% to 100% ink as you scroll. One muted mono marg
 ### Not found & errors
 "Sheet not found", with a dimension line measuring the empty space and a ghost button home.
 Errors use `--fault` on ink or `--fault-deep` on paper, with a retry button.
+
+### Pixel seams
+Two scene boundaries dissolve upward in square cells of the next surface's colour, scrubbed by
+scroll: Work → Toolkit, Revisions → Contact (Hero → Statement removed, owner 2026-10-10). 25 columns × 4 rows (12 at
+tablet, 6 on mobile), hard cuts per cell, deterministic order. None under reduced motion.
 
 ### Motion summary
 | Edit term | Library | Ease / duration |

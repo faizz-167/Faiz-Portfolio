@@ -27,7 +27,7 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 - **Next subtask:** P12.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-09 — Phase 11b complete: toolkit gauge (pinned meter ≥1024 with motion, readable faces list elsewhere), home shows 3 projects + `/work` full index (○), placeholder screenshot plates on 3 case pages; lint/test/build pass; next: Phase 12.
+**Last updated:** 2026-10-10 — Phase 11d complete: Sheet 02 opens with the full-bleed portrait band and Systems · Retrieval · Interfaces; lint/test/build pass; next: Phase 12 (confirm card focus by real Tab and CSS reduced-motion paths).
 
 ## Phase overview
 
@@ -46,10 +46,12 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 10 | Home scenes II — Work, BOM, Revisions, Contact | `specs/phase10.md` | done |
 | 11 | Case study pages & architecture diagrams | `specs/phase11.md` | done |
 | 11b | Toolkit gauge, work archive & screenshot plates | `specs/phase11b.md` | done |
+| 11c | Assembly cards, ink reveal, portrait & pixel seams | `specs/phase11c.md` | done |
+| 11d | About sheet: full-bleed portrait | `specs/phase11d.md` | done |
 | 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | todo |
 | 13 | Performance, SEO & production hardening | `specs/phase13.md` | todo |
 
-Dependency order: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 8 → 9 → 10 → 11 → 11b → 12 → 13.
+Dependency order: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 8 → 9 → 10 → 11 → 11b → 11c → 11d → 12 → 13.
 Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 
 ## Subtasks
@@ -194,6 +196,24 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | P11b.4 | Home work index: three + "See all assemblies" | done | `WorkIndex` = first 3 + outline "See all assemblies" + count; `workRowData()` shared; WorkRows `preview` from plate 1 image only, `headingLevel` prop |
 | P11b.5 | All-assemblies page `/work` | done | `app/work/page.tsx` + `components/work/AllAssemblies.tsx`: ink, ○, h1 + h2 rows, back link; the `/work` template wipe also plays on arrival here |
 | P11b.6 | Screenshot plates on case pages | done | `case/CasePlates.tsx`: own ink scene "Sheet 03 — Plates" between System and Notes (Notes → Sheet 04 when plates exist); 16:10 hairline frame, corner ticks, SVG hatch placeholder (role=img), next/image path for real images. Validated 2026-10-09 (all 8 criteria, see phase11b.md) |
+
+### Phase 11c — Assembly cards, ink reveal, portrait & pixel seams
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P11c.1 | Log the exceptions; amend design.md | done | 4 Decisions-log rows (photo, accent band, home placeholders, built in main session); design.md §1 principles 2–3, §7 Statement, Work index, new Pixel seams |
+| P11c.2 | Home assembly cards: layout and content | done | `home/WorkCards.tsx` (server) + `motion/PlateDrift.tsx`; plate frame + hatch extracted to `plate/Plate.tsx` (CasePlates uses it) |
+| P11c.3 | Assembly cards: hover and cursor label | done | CSS transitions gated by new `fine-motion` custom variant; Crosshair shows a chip over `[data-cursor-label]` |
+| P11c.4 | Statement: accent band on the scrub | done | ScrubText: ink span + 4 masked accent copies per word (disjoint quarters of a 6×6 cell tile, 0.1em cells), opacity cuts on one scrubbed timeline |
+| P11c.5 | Portrait plate in the Statement scene | done | `home/Portrait.tsx`; `profile.portrait`; statement cols 1–7, plate 9–12; 8×10 PixelField clear reveal |
+| P11c.6 | Pixel seams at three scene boundaries | done | `motion/PixelField.tsx` + `PixelSeam.tsx` + `pixel-order.ts` (tested); seams in Hero, WorkIndex, Revisions. Validated 2026-10-10 (all 10 criteria, see phase11c.md) |
+
+### Phase 11d — About sheet: full-bleed portrait
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P11d.1 | Log the exception; amend design.md | done | Decisions-log row; design.md principle 3 + §7 Statement |
+| P11d.2 | Full-bleed portrait band | done | `home/PortraitBand.tsx` (client); band on `z-content` so the trace runs behind it; PixelField gained `rows="cover"`; PlateDrift gained `anyPointer`; `home/Portrait.tsx` removed |
+| P11d.3 | Role words over the band | done | `profile.roleWords`; h2 (h3 at 640–1023); scrubbed underline then word cuts |
+| P11d.4 | Statement below the band | done | Statement cols 2–10, caption strip, via below the band. Validated 2026-10-10 (all 7 criteria, see phase11d.md) |
 
 ### Phase 12 — Responsive & a11y
 | ID | Subtask | Status | Notes |
@@ -343,6 +363,14 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-09 | `/work` is under `app/work/template.tsx`, so the signal wipe also plays on arrival at `/work` | Same template as case pages; no extra code. Remove by moving the archive outside the template if the owner dislikes it |
 | 2026-10-09 | Placeholder hatch is an SVG `<pattern>` (45°, 12px, `--fg-muted`), not a CSS repeating gradient | Gradients are banned (design.md §1) |
 | 2026-10-09 | design.md §7 "Bill of materials" replaced by "Services & toolkit" | The table is gone (owner request, phase11b.md); design.md must describe what ships |
+| 2026-10-10 | Exception to principle 3: the owner's own portrait appears once, as a drawing plate in the Statement scene | Owner request (phase11c.md P11c.5); no other photography |
+| 2026-10-10 | Exception to principle 2 and the highlighted-word ban: while the Statement scrubs, the leading-edge words show in `--accent`, pixelated; none stay accent at rest | Owner request (phase11c.md P11c.4), after the produx.design hero reveal |
+| 2026-10-10 | Home work cards show plate-1 placeholders (reverses P11b.4 "placeholders never on home") | Owner will supply screenshots later (phase11c.md P11c.2) |
+| 2026-10-10 | Phase 11c built in the main session, not a fresh subagent | Owner instruction for this phase |
+| 2026-10-10 | Home cards: card 1 at 4:3, card 2 square from 1024px, swapped below (spec said 16:10 / 4:5); tablet layout is the 640–1023 tier at 4 + 4 of 8 columns | At 4:5 card 2 was taller than card 1 and rose instead of dropping; the grid's tablet tier is 640–1023 with 8 columns |
+| 2026-10-10 | Accent band pixels use `mask-image` on stacked copies; pixel cells and band are cut with opacity/visibility only | A per-cell mask is the only way to pixelate glyph colour without canvas or a new package |
+| 2026-10-10 | Exception widened: the portrait runs full-bleed once, as the Sheet 02 band, with three role words (Systems · Retrieval · Interfaces) over it; it replaces the Phase 11c plate | Owner chose direction B (phase11d.md), after oliverjeffers.com/about |
+| 2026-10-10 | Hero → Statement pixel seam removed; two seams remain (Work → Toolkit, Revisions → Contact) | Owner request after Phase 11d; the band's own pixel reveal now opens Sheet 02 |
 | 2026-10-10 | Gauge `--gauge-col`/`--gauge-bar` set as arbitrary properties on the band, not a global `[data-gauge-band]` rule | Turbopack dev CSS dropped the vars-only global rule (prod kept it), collapsing every column to the bar width in `next dev` |
 
 ## Notes for agents

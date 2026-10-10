@@ -6,6 +6,7 @@ import { Pin } from "@/components/motion/Pin";
 import { RuleDraw } from "@/components/motion/RuleDraw";
 import { Text } from "@/components/type/Text";
 import { revisions, type Revision } from "@/content";
+import { PixelSeam } from "@/components/motion/PixelSeam";
 
 const SCENE_ID = "revisions";
 
@@ -87,6 +88,8 @@ export function Revisions() {
           </RuleDraw>
         </Stack>
       </Container>
+      {/* P11c.6: the boundary into the next scene dissolves in its colour. */}
+      <PixelSeam to="signal" seed={37} />
     </Scene>
   );
 }

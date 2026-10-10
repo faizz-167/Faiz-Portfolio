@@ -2,6 +2,7 @@
 
 import { useRef } from "react";
 import { surfaces, type Surface } from "@/components/layout/Scene";
+import { ArrowUpRightIcon } from "@/components/ui/icons";
 import { usePointerFine } from "@/lib/hooks/usePointerFine";
 import { gsap, useGSAP } from "@/lib/motion/gsap";
 import { useReducedMotion } from "@/lib/motion/reduced-motion";
@@ -22,7 +23,14 @@ const crosshairClasses = {
   point: "absolute top-0 left-0 opacity-0",
   mark: "absolute size-2 -translate-1/2 bg-accent opacity-0 data-active:opacity-100",
   readout: "absolute top-3 left-3 font-mono text-data whitespace-nowrap text-fg-muted",
+  /* Card chip (P11c.3): below the readout, scales from its top-left corner. */
+  chip: "absolute top-6 left-3 flex origin-top-left items-stretch gap-1 scale-0",
+  chipCell: "grid size-6 place-items-center bg-accent text-surface",
+  chipLabel: "flex items-center bg-fg px-3 font-mono text-data whitespace-nowrap text-surface",
 } as const;
+
+/** Elements that carry a cursor chip name it here (e.g. the home work cards). */
+const LABELLED = "[data-cursor-label]";
 
 const pad = (n: number) => String(Math.max(0, Math.round(n))).padStart(COORD_DIGITS, "0");
 
@@ -42,7 +50,9 @@ function isSurface(value: string | null | undefined): value is Surface {
  * Crosshair cursor (P6.8): two 1px `--rule` lines across the viewport meeting at
  * the pointer, a mono readout `x 0412 · y 0288`, and a small accent square at
  * the intersection over interactive elements. Lines and colours follow the
- * surface under the pointer (the layer copies its `data-surface`).
+ * surface under the pointer (the layer copies its `data-surface`). Over an
+ * element with `data-cursor-label` a chip (accent arrow cell + mono label)
+ * scales in below the readout (P11c.3).
  * Follows with `gsap.quickTo` (transforms only). The native cursor is hidden
  * while mounted, except over text inputs (I-beam stays).
  * Renders nothing on the server, on touch/coarse pointers, or with reduced
@@ -62,6 +72,8 @@ function CrosshairLayer() {
   const point = useRef<HTMLDivElement>(null);
   const mark = useRef<HTMLDivElement>(null);
   const readout = useRef<HTMLSpanElement>(null);
+  const chip = useRef<HTMLDivElement>(null);
+  const chipLabel = useRef<HTMLSpanElement>(null);
 
   useGSAP(
     () => {
@@ -72,9 +84,12 @@ function CrosshairLayer() {
         point: point.current,
         mark: mark.current,
         readout: readout.current,
+        chip: chip.current,
+        chipLabel: chipLabel.current,
       };
-      if (!els.root || !els.h || !els.v || !els.point || !els.mark || !els.readout) return;
-      const { root: layer, h, v, point: dot, mark: square, readout: label } = els;
+      if (!els.root || !els.h || !els.v || !els.point || !els.mark || !els.readout || !els.chip || !els.chipLabel)
+        return;
+      const { root: layer, h, v, point: dot, mark: square, readout: label, chip: tag, chipLabel: tagText } = els;
       const html = document.documentElement;
       html.classList.add(CROSSHAIR_CLASS);
 
@@ -83,6 +98,7 @@ function CrosshairLayer() {
       const yTo = gsap.quickTo([h, dot], "y", follow);
       let shown = false;
       let surface: string | null = null;
+      let chipFor: Element | null = null;
 
       const setShown = (on: boolean) => {
         if (shown === on) return;
@@ -106,6 +122,13 @@ function CrosshairLayer() {
       const onOver = (event: PointerEvent) => {
         const target = event.target instanceof Element ? event.target : null;
         square.toggleAttribute("data-active", Boolean(target?.closest(INTERACTIVE)));
+        const labelled = target?.closest(LABELLED) ?? null;
+        if (labelled !== chipFor) {
+          chipFor = labelled;
+          const text = labelled?.getAttribute("data-cursor-label");
+          if (text) tagText.textContent = text;
+          gsap.to(tag, { scale: text ? 1 : 0, duration: durationsS.fast, ease: gsapEases.out, overwrite: true });
+        }
         const next = target?.closest("[data-surface]")?.getAttribute("data-surface");
         if (isSurface(next) && next !== surface) {
           surface = next;
@@ -113,7 +136,11 @@ function CrosshairLayer() {
         }
       };
 
-      const onLeave = () => setShown(false);
+      const onLeave = () => {
+        setShown(false);
+        chipFor = null;
+        gsap.set(tag, { scale: 0 });
+      };
 
       window.addEventListener("pointermove", onMove, { passive: true });
       document.addEventListener("pointerover", onOver, { passive: true });
@@ -135,6 +162,12 @@ function CrosshairLayer() {
       <div ref={point} className={crosshairClasses.point}>
         <div ref={mark} className={crosshairClasses.mark} />
         <span ref={readout} className={crosshairClasses.readout} />
+        <div ref={chip} className={crosshairClasses.chip}>
+          <span className={crosshairClasses.chipCell}>
+            <ArrowUpRightIcon className="size-3" />
+          </span>
+          <span ref={chipLabel} className={crosshairClasses.chipLabel} />
+        </div>
       </div>
     </div>
   );

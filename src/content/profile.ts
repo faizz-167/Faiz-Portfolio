@@ -15,6 +15,13 @@ export const profile = {
   ],
   statement:
     "I build the parts of software you don't see until they break: queues that survive a restart, retrieval that knows when it doesn't know, interfaces that keep up with a live stream of results. Then I make the part you do see feel inevitable.",
+  portrait: {
+    src: "/assets/portrait.jpg",
+    width: 3452,
+    height: 2588,
+    alt: "Mohamed Faiz, black-and-white portrait, glasses, looking to the right.",
+  },
+  roleWords: ["Systems", "Retrieval", "Interfaces"],
   copy: {
     heroLine: "Daddy's Home.",
     contactLines: ["Call me, Baby", "for your new website."],
