@@ -2,7 +2,7 @@
 
 import { MotionConfig } from "motion/react";
 import { Crosshair } from "@/components/motion/Crosshair";
-import { useEffect, useSyncExternalStore, type ReactNode } from "react";
+import { Suspense, useEffect, useSyncExternalStore, type ReactNode } from "react";
 import { ScrollTrigger, gsap, requestRefresh } from "@/lib/motion/gsap";
 import {
   LenisContext,
@@ -13,6 +13,7 @@ import {
 } from "@/lib/motion/lenis";
 import { MOTION_OK_QUERY, REDUCED_MOTION_QUERY } from "@/lib/motion/reduced-motion";
 import { spring } from "@/lib/motion/tokens";
+import { RouteWatcher } from "@/providers/RouteWatcher";
 
 const MOTION_CLASS = { ok: "motion-ok", reduced: "motion-reduced" } as const;
 
@@ -136,6 +137,9 @@ export function MotionProvider({ children }: { children: ReactNode }) {
       <LenisContext value={lenis}>
         {children}
         <Crosshair />
+        <Suspense fallback={null}>
+          <RouteWatcher />
+        </Suspense>
       </LenisContext>
     </MotionConfig>
   );

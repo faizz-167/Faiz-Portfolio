@@ -3,7 +3,7 @@ import type { ComponentPropsWithRef, ReactNode } from "react";
 import { cn } from "@/lib/cn";
 
 /*
- * `group/control` is shared by Link and Button so RollText (and Button's own
+ * `group/control` is shared by Link and Button so LetterSwap (and Button's own
  * parts) react to the nearest interactive ancestor's hover and keyboard focus.
  * Tailwind gates every hover variant behind (hover: hover).
  * Only transform animates: the underline is a scaleX'd pseudo-element.
@@ -16,7 +16,7 @@ const linkClasses = {
     /* Link inside body copy: inline (WCAG 2.5.8 inline exception), always underlined. */
     inline:
       "underline decoration-1 underline-offset-[0.2em] hover:decoration-2 focus-visible:decoration-2",
-    /* Navigation link: 44px target, no underline; put a RollText inside. */
+    /* Navigation link: 44px target, no underline; put a LetterSwap inside. */
     nav: "inline-flex min-h-touch min-w-touch items-center",
     /* No decoration and no box: the caller styles it (Button). */
     plain: "",

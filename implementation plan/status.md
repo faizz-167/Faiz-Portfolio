@@ -27,7 +27,7 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 - **Next subtask:** P12.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-10 — Phase 11d complete: Sheet 02 opens with the full-bleed portrait band and Systems · Retrieval · Interfaces; lint/test/build pass; next: Phase 12 (confirm card focus by real Tab and CSS reduced-motion paths).
+**Last updated:** 2026-10-12 — Phase 12f complete: no plate flash on a hard load of /work. Earlier: 12e letter swap, 12d field-only /work. Earlier: 2026-10-10 — Phase 11d complete: Sheet 02 opens with the full-bleed portrait band and Systems · Retrieval · Interfaces; lint/test/build pass; next: Phase 12 (confirm card focus by real Tab and CSS reduced-motion paths).
 
 ## Phase overview
 
@@ -49,6 +49,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 11c | Assembly cards, ink reveal, portrait & pixel seams | `specs/phase11c.md` | done |
 | 11d | About sheet: full-bleed portrait | `specs/phase11d.md` | done |
 | 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | todo |
+| 12b | Work page: drawing register | `specs/phase12b.md` | done |
+| 12c | Work page: floating field | `specs/phase12c.md` | done |
+| 12d | Work page: field only | `specs/phase12d.md` | done |
+| 12e | Letter swap on text controls | `specs/phase12e.md` | done |
+| 12f | Work page: no flash on hard load | `specs/phase12f.md` | done |
 | 13 | Performance, SEO & production hardening | `specs/phase13.md` | todo |
 
 Dependency order: 0 → 1 → 2 → 3 → 4 → 5 → 6 → 8 → 9 → 10 → 11 → 11b → 11c → 11d → 12 → 13.
@@ -225,6 +230,52 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | P12.5 | Reduced-motion walkthrough | todo | |
 | P12.6 | Fix list | todo | |
 
+### Phase 12b — Work page: drawing register
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P12b.1 | Log the change; amend design.md | done | Decisions-log row 2026-10-12; design.md §7 Work index |
+| P12b.2 | Add React Bits TechText | done | `motion/TechText.tsx`, trimmed from the React Bits source: type read from computed style, drawn at the DOM origin, hard-edged lens; drag/selection/labels/specks/sweep removed. shadcn CLI also reformatted `app/system/page.tsx`; reverted |
+| P12b.3 | Register grid and title cell | done | `work/AllAssemblies.tsx`; cells draw top+left hairlines, frame adds right+bottom. `home/WorkRows.tsx` and `workRowData` removed (no other users) |
+| P12b.4 | Assembly plates | done | A-01…; IAM dashed frame, not a link |
+| P12b.5 | Hover, focus and touch | done | `motion/TechTitle.tsx`: canvas only on fine pointer + motion, after fonts load, and only for one-line titles |
+| P12b.6 | Motion, reduced motion, no JS | done | `work/RegisterReveal.tsx`. A zero-length staggered `from` skipped straight to its end state; replaced with explicit `set`s. Validated 2026-10-12 (see phase12b.md) |
+
+### Phase 12c — Work page: floating field
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P12c.1 | Log the change; amend design.md | done | Decisions-log row 2026-10-12; design.md §7 Work index |
+| P12c.2 | Floating field band | done | `work/FloatingField.tsx`; band 80svh / 70svh, title-only below 640px |
+| P12c.3 | Floating plates | done | Four slots; aria-hidden + tabindex -1. A-02 slot moved to top-0 and narrowed (at depth 2 it drifted into the title at 1440); plates wider below 1024px (placeholder label clipped at 768) |
+| P12c.4 | Cursor parallax | done | `motion/Floating.tsx`: own rAF loop, centre-relative, against the cursor, time-based easing, sleeps when settled or off screen |
+| P12c.5 | Arrival, reduced motion, touch, no JS | done | Plates cut in after the title (GSAP sets); static on touch, reduced motion, no JS |
+| P12c.6 | Register title cell | done | Title cell keeps count + line. Validated 2026-10-12 (see phase12c.md) |
+| P12c.fix | Pointer reached no plate | done | The title layer spanned the band above the plates, so a real pointer got no hover, no chip and no click. Validation had clicked with `element.click()`, which skips hit-testing. Fixed with `pointer-events-none` on the layer (text keeps `auto`) |
+
+### Phase 12d — Work page: field only
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P12d.1 | Log the change; amend design.md | done | Decisions-log row; design.md §7 Work index |
+| P12d.2 | Remove the register | done | Register grid, `RegisterReveal`, `TechTitle` and `TechText` deleted |
+| P12d.3 | Floating plates become the index | done | Plates are links named by the full title (role/team as sr-only description); chip, scale and sibling fade on hover. A-01 moved to top 12%, 15% wide: the count line under the h1 pushed the title up into its drift |
+| P12d.4 | In-progress project in the field | done | Owner chose the fifth plate (2026-10-12). Fifth slot bottom centre, depth 0.75; A-04 sits further right below 1024px (overlapped IAM at 768) |
+| P12d.5 | Phones | done | Stacked full width at 16:10; parallax also needs min-width 640px. Validated 2026-10-12 (see phase12d.md) |
+
+### Phase 12e — Letter swap on text controls
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P12e.1 | Log the change; amend design.md | done | Decisions-log row; design.md §6 buttons + links, motion summary |
+| P12e.2 | Letter swap primitive | done | `motion/LetterSwap.tsx` (Motion `animate`, rotateX about the box centre, no perspective); 3D only under `data-live` (fine pointer + motion). Effect re-collects boxes when the text changes (CopyButton "Copied" kept stale nodes) |
+| P12e.3 | Replace RollText | done | Strip, footer, `/system` demo; `ui/RollText.tsx` deleted |
+| P12e.4 | Button labels | done | `Button` wraps string children; non-string children unchanged |
+| P12e.5 | Reduced motion, touch, no JS, a11y | done | Validated 2026-10-12 (see phase12e.md) |
+
+### Phase 12f — Work page: no flash on hard load
+| ID | Subtask | Status | Notes |
+|---|---|---|---|
+| P12f.1 | Shared hard-load check | done | `lib/motion/arrival.ts` + `providers/RouteWatcher.tsx` (in Suspense: `usePathname` suspends on `/work/[slug]`'s fallback param under Cache Components). RouteWipe's own `mountedOnce`/`documentPath` replaced by it |
+| P12f.2 | Skip the cut-in on a hard load | done | `Floating` returns early on a hard-load view. Also: the plates now hide in the layout effect itself; before, the hide sat inside the delayed timeline, so they showed ~160ms under the wipe first |
+| P12f.3 | Record it | done | Decisions-log row; design.md /work paragraph. Validated 2026-10-12 (see phase12f.md) |
+
 ### Phase 13 — Production
 | ID | Subtask | Status | Notes |
 |---|---|---|---|
@@ -372,6 +423,11 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-10 | Exception widened: the portrait runs full-bleed once, as the Sheet 02 band, with three role words (Systems · Retrieval · Interfaces) over it; it replaces the Phase 11c plate | Owner chose direction B (phase11d.md), after oliverjeffers.com/about |
 | 2026-10-10 | Hero → Statement pixel seam removed; two seams remain (Work → Toolkit, Revisions → Contact) | Owner request after Phase 11d; the band's own pixel reveal now opens Sheet 02 |
 | 2026-10-10 | Gauge `--gauge-col`/`--gauge-bar` set as arbitrary properties on the band, not a global `[data-gauge-band]` rule | Turbopack dev CSS dropped the vars-only global rule (prod kept it), collapsing every column to the bar width in `next dev` |
+| 2026-10-12 | `/work` drops the expanding rows for a drawing register (grid of plates, title cell first); React Bits TechText vendored for the title hover | Owner asked for a new /work UI inside the Build Sheet rules (phase12b.md) |
+| 2026-10-12 | `/work` opens with a floating field: the h1 centred in a first-screen band, the four case-page plates floating around it against the cursor (after Fancy Components Parallax Floating, written on our own rAF loop, no package) | Owner chose direction B (phase12c.md). The plates are flat 2D frames, so the "floating 3D objects" ban is not touched |
+| 2026-10-12 | Register removed from `/work`; the floating field is the index (plates are real links, IAM floats as a fifth dashed plate, phones stack). TechText removed with it | Owner request (phase12d.md); TechText's only use was the register titles |
+| 2026-10-12 | Letter swap (after Fancy Components Letter 3D Swap, written on Motion) replaces roll text on nav links and is added to Button labels alongside the fill/underline | Owner chose A (phase12e.md). A short rotation of type, not a 3D object, so the ban is not touched; Motion owns it as a state-driven micro-interaction |
+| 2026-10-12 | `/work` plate cut-in plays on client-navigation arrivals only; a hard load shows the plates as served | Owner chose A (phase12f.md): removes the show→hide→show flash with no state where content is hidden before JS |
 
 ## Notes for agents
 

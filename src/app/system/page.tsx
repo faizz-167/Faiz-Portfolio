@@ -18,7 +18,7 @@ import { Text, type TextVariant } from "@/components/type/Text";
 import { Button } from "@/components/ui/Button";
 import { CopyButton } from "@/components/ui/CopyButton";
 import { Link } from "@/components/ui/Link";
-import { RollText } from "@/components/ui/RollText";
+import { LetterSwap } from "@/components/motion/LetterSwap";
 import { TitleBlock } from "@/components/ui/TitleBlock";
 import { CompileDemo, DimensionDemo, HoverPreviewDemo } from "./MotionDemos";
 
@@ -259,11 +259,11 @@ function InteractiveSpecimen({ surface }: { surface: Surface }) {
       </Stack>
 
       <Stack gap={5}>
-        <Text variant="h3">RollText</Text>
+        <Text variant="h3">LetterSwap</Text>
         <Cluster as="nav" aria-label={`Specimen navigation on ${surface}`} gap={5} className="font-mono text-data">
           {navLinks.map((link) => (
             <Link key={link.label} variant="nav" href={link.href}>
-              <RollText>{link.label}</RollText>
+              <LetterSwap>{link.label}</LetterSwap>
             </Link>
           ))}
         </Cluster>

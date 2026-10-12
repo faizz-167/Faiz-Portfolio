@@ -2,7 +2,7 @@
 
 import { usePathname } from "next/navigation";
 import { Link } from "@/components/ui/Link";
-import { RollText } from "@/components/ui/RollText";
+import { LetterSwap } from "@/components/motion/LetterSwap";
 import { profile } from "@/content";
 import { cn } from "@/lib/cn";
 import { homeHref, sectionHref, sections } from "./nav";
@@ -33,14 +33,14 @@ export function FooterLinks({ pathname, className }: { pathname: string; classNa
   return (
     <div className={cn(footerClasses.links, className)}>
       <Link variant="nav" href={homeHref(pathname)}>
-        <RollText>{profile.name}</RollText>
+        <LetterSwap>{profile.name}</LetterSwap>
       </Link>
       <nav aria-label="Footer">
         <ul className={footerClasses.list}>
           {sections.map((section) => (
             <li key={section.id}>
               <Link variant="nav" href={sectionHref(pathname, section.id)}>
-                <RollText>{section.label}</RollText>
+                <LetterSwap>{section.label}</LetterSwap>
               </Link>
             </li>
           ))}

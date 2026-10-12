@@ -16,8 +16,8 @@ const labelClasses = {
 
 /**
  * The active sheet name with a vertical cut: the old name leaves upward as the
- * new one arrives from below, inside a clipped one-line box (RollText's
- * geometry, GSAP-driven because the change comes from scroll, not hover).
+ * new one arrives from below, inside a clipped one-line box (GSAP-driven,
+ * because the change comes from scroll, not hover).
  * First label and reduced motion: a plain cut.
  */
 export function SheetLabel({ label, className }: { label: string; className?: string }) {

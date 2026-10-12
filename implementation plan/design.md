@@ -229,9 +229,13 @@ Details:
 - Pressed: `transform: translateY(1px)` for 80ms. No scale effects.
 - Magnetic pull (up to 12px) only for the main contact action, and only on `(pointer: fine)`.
 - Only `transform` and `opacity` animate. Never width, padding, background-size or clip-path.
+- Plain-text labels also get the letter swap (see Links below) at the same time as the fill or
+  underline (Phase 12e, owner 2026-10-12).
 
 Links: inline links in body copy keep a 1px underline at all times, which thickens on hover;
-navigation links use the roll-text effect (the label slides up and is replaced by a copy).
+navigation links use the **letter swap** (Phase 12e): each letter sits on a box that turns 90° up
+to an identical copy, one letter after another (`--dur-base`, `--ease-out`, 25ms per letter), on
+hover or keyboard focus. Fine pointer and motion only; flat letters otherwise.
 
 ---
 
@@ -287,10 +291,14 @@ mask, and no word keeps the accent at rest.
 - Fine pointer with motion: the plate drifts with scroll and scales inside its fixed frame on
   hover, the marker grows in front of the title, tags slide into the plate's corner, the other
   cards fade, and the crosshair carries an "Open drawing" chip. Focus shows marker and tags.
-- "See all assemblies" and the total sit underneath. `/work` keeps the expanding rows: one open
-  at a time, `--raised` fill, spec list, summary, "Open the drawing →", cursor-following preview,
-  rows that aren't open fade to `--fg-muted`.
-- In-progress projects (IAM backend) show "On the drawing board" with a dashed rule, no preview
+- "See all assemblies" and the total sit underneath. `/work` is a **floating field** (Phases
+  12c–12d): the h1 and the count centred in a first-screen band, every project hand-placed around
+  it as a plate at its own depth, drifting against the cursor (fine pointer, motion, 640px and up;
+  static otherwise). The plates cut in after the title on client-navigation arrivals only, never
+  on a hard load (Phase 12f: no flash). Linked plates are ordinary links named by the full title. Hover shows the
+  "Open drawing" chip, scales the media and fades the others. Below 640px the plates stack in one
+  column under the title.
+- In-progress projects (IAM backend) show "On the drawing board" with a dashed rule (a dashed, unlinked floating plate on `/work`), no preview
   and no case page.
 
 ### Services & toolkit (was: Bill of materials)
@@ -346,5 +354,6 @@ tablet, 6 on mobile), hard cuts per cell, deterministic order. None under reduce
 | Scrub | GSAP ScrollTrigger | linear to scroll |
 | Trace / draw | GSAP DrawSVG (site), anime.js (diagrams, dimensions) | scroll-linked / `--dur-scene` 1100ms |
 | Spring | Motion | stiffness 320, damping 32, mass 0.6 |
+| Letter swap | Motion `animate` | `--ease-out`, `--dur-base` 320ms, 25ms stagger per letter |
 
 With reduced motion: every sequence shows its final state, native scrolling, no cursor, no pinning.

@@ -3,7 +3,7 @@
 import { useEffect, useRef } from "react";
 import { COORDS_PLACEHOLDER, formatCoords } from "@/components/motion/Crosshair";
 import { Link } from "@/components/ui/Link";
-import { RollText } from "@/components/ui/RollText";
+import { LetterSwap } from "@/components/motion/LetterSwap";
 import { profile } from "@/content";
 import { cn } from "@/lib/cn";
 import { useActiveSheet } from "@/lib/hooks/useActiveSheet";
@@ -67,7 +67,7 @@ export function SheetStrip({ pathname }: { pathname: string }) {
     <div data-surface={active?.surface ?? DEFAULT_SURFACE} className={stripClasses.root}>
       <div className={cn(stripClasses.cell, stripClasses.first)}>
         <Link variant="nav" href={homeHref(pathname)}>
-          <RollText>{profile.name}</RollText>
+          <LetterSwap>{profile.name}</LetterSwap>
         </Link>
       </div>
       <p className={cn(stripClasses.cell, stripClasses.label)}>
@@ -85,7 +85,7 @@ export function SheetStrip({ pathname }: { pathname: string }) {
           {sections.map((section) => (
             <li key={section.id}>
               <Link variant="nav" href={sectionHref(pathname, section.id)}>
-                <RollText>{section.label}</RollText>
+                <LetterSwap>{section.label}</LetterSwap>
               </Link>
             </li>
           ))}

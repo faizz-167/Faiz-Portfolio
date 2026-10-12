@@ -1,4 +1,5 @@
 import type { ComponentPropsWithRef, ReactNode } from "react";
+import { LetterSwap } from "@/components/motion/LetterSwap";
 import { Icon, type IconName } from "@/components/ui/icons";
 import { isExternalHref, Link, type LinkProps } from "@/components/ui/Link";
 import { cn } from "@/lib/cn";
@@ -6,7 +7,7 @@ import { cn } from "@/lib/cn";
 /*
  * design.md §6. Square, flat, mono "data" label, ≥ 44×44px.
  * Hover / keyboard focus (on the root; inner parts use the named group "control",
- * shared with Link so RollText works inside a Button too):
+ * shared with Link):
  * - solid/outline: a "::before" fill (--wipe: lime on ink, signal-deep on paper,
  *   ink on signal) scales X 0 → 1 from the left and out to the right, --ease-wipe.
  *   On outline it overhangs the 1px border, so the border takes the fill colour too.
@@ -15,6 +16,7 @@ import { cn } from "@/lib/cn";
  * Only transform animates. The label colour is a hard cut (--dur-cut) at the
  * wipe's midpoint (--dur-fast = half of --dur-base), not a colour tween.
  * Pressed: translateY(1px) cut, held while :active.
+ * Plain-text labels also get the letter swap (P12e.4), at the same time as the above.
  */
 const buttonClasses = {
   base: [
@@ -118,7 +120,9 @@ function ButtonContent({
 }) {
   return (
     <span className={buttonClasses.content}>
-      <span className={variant === "ghost" ? buttonClasses.ghostLabel : undefined}>{children}</span>
+      <span className={variant === "ghost" ? buttonClasses.ghostLabel : undefined}>
+        {typeof children === "string" ? <LetterSwap>{children}</LetterSwap> : children}
+      </span>
       {icon !== "none" && <Icon name={icon} className={buttonClasses.icon} />}
     </span>
   );

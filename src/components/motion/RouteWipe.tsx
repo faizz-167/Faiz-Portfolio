@@ -2,6 +2,7 @@
 
 import { animate } from "motion/react";
 import { useLayoutEffect, useRef, type ReactNode } from "react";
+import { isHardLoadView } from "@/lib/motion/arrival";
 import { requestRefresh } from "@/lib/motion/gsap";
 import { getLenis } from "@/lib/motion/lenis";
 import { prefersReducedMotion } from "@/lib/motion/reduced-motion";
@@ -10,16 +11,6 @@ import { cubicBeziers } from "@/lib/motion/tokens";
 /** Spec P11.7: 0.6s signal-panel wipe. */
 const WIPE_S = 0.6;
 
-/*
- * A hard load straight onto a case page must not wipe or reset the scroll:
- * there was no previous page. The document's navigation entry holds the URL
- * the browser actually loaded, whenever this module happens to evaluate.
- */
-function documentPath() {
-  const entry = performance.getEntriesByType("navigation")[0];
-  return entry ? new URL(entry.name).pathname : null;
-}
-let mountedOnce = false;
 
 /**
  * Page transition for /work/* (P11.7), mounted by `app/work/template.tsx`,
@@ -40,9 +31,9 @@ export function RouteWipe({ children }: { children: ReactNode }) {
   const panel = useRef<HTMLDivElement>(null);
 
   useLayoutEffect(() => {
-    // A hard load keeps the browser's own scroll (e.g. a #drawing anchor) and gets no wipe.
-    const arrival = mountedOnce || window.location.pathname !== documentPath();
-    mountedOnce = true;
+    // A hard load keeps the browser's own scroll (e.g. a #drawing anchor) and gets no wipe:
+    // there was no previous page.
+    const arrival = !isHardLoadView();
     requestRefresh();
     if (!arrival) return;
     const lenis = getLenis();
