@@ -19,7 +19,7 @@ const statementClasses = {
 
 /**
  * Sheet 02 — the about sheet (P9.6, P11c.4, P11d). Paper. It opens with the
- * owner's portrait as a full-bleed band carrying the three role words
+ * owner's portrait as a full-bleed band with nothing over it
  * (PortraitBand), then a mono caption strip, then the statement in large serif
  * across columns 2–10, inked word by word with the scroll through an accent
  * band (ScrubText). The heading is for assistive tech only: an eyebrow label
@@ -45,7 +45,8 @@ export function Statement() {
           <Grid>
             <GridCell start={{ md: 1, lg: 2 }} span={{ base: 4, md: 8, lg: 9 }}>
               {/* h3 size, the lede's text weight: serif statement, never a bold paragraph. */}
-              <ScrubText className="font-text text-h3 font-(--text-lede--font-weight) text-pretty">
+              {/* max-w-measure: at 1920 the nine columns reach 63ch of this face (P12.1). */}
+              <ScrubText className="max-w-measure font-text text-h3 font-(--text-lede--font-weight) text-pretty">
                 {profile.statement}
               </ScrubText>
             </GridCell>

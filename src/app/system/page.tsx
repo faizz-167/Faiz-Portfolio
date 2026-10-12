@@ -629,7 +629,7 @@ export default function SystemPage() {
               <Text variant="data" tone="muted">
                 WidthFlex · hover (wdth 100 → 130) inside a link
               </Text>
-              <Link variant="plain" href="#motion-pointer" className="block">
+              <Link variant="plain" href="#motion-pointer" className="flex min-h-touch items-center">
                 <WidthFlex mode="hover" className="font-display text-h2">
                   Stretch on hover
                 </WidthFlex>
@@ -637,7 +637,8 @@ export default function SystemPage() {
               <Text variant="data" tone="muted">
                 WidthFlex · velocity (scroll speed → wdth 85–115)
               </Text>
-              <WidthFlex mode="velocity" as="p" className="font-display text-h1">
+              {/* h2 below 640px: at wdth 115 the h1 line is wider than a 360 column (P12.1). */}
+              <WidthFlex mode="velocity" as="p" className="font-display text-h2 sm:text-h1">
                 Scroll faster
               </WidthFlex>
               <Text variant="data" tone="muted">

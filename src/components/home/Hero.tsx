@@ -21,6 +21,8 @@ const SCENE_ID = "top"; // the strip's name links to #top (Phase 8)
  * sits at the bottom; content taller than the viewport grows the scene instead
  * of overflowing it. `overflow-x-clip`: the 140 width cut is wider than the
  * page for 80ms and must not add a scrollbar.
+ * Below 640px the block padding drops to 64px (P12.1): at 360×740 the section
+ * rhythm pushed the buttons under the bottom strip. 64px still clears the strip.
  */
 export function Hero() {
   return (
@@ -28,7 +30,7 @@ export function Hero() {
       id={SCENE_ID}
       sheet="Sheet 01 — General arrangement"
       surface="ink"
-      className="flex min-h-svh flex-col overflow-x-clip"
+      className="flex min-h-svh flex-col overflow-x-clip max-sm:pt-8 max-sm:pb-8"
       // HeroGuard adds data-hero-guard before hydration.
       suppressHydrationWarning
     >

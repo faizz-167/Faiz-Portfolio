@@ -42,7 +42,7 @@ function keptOnNarrow(index: number, count: number) {
 
 const heroClasses = {
   /* Fills the section; top block pinned up, line + details pinned down. */
-  container: "flex-1 content-between gap-y-8",
+  container: "flex-1 content-between gap-y-8 max-sm:gap-y-6",
   log: "flex flex-col font-mono text-data text-fg-muted",
   /*
    * Hero-only line-height (leading-hero) so the "y" of "Daddy's" clears

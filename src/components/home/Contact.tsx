@@ -37,7 +37,8 @@ const contactClasses = {
   line: "block",
   /* The email's fit container (globals.css "P10.6 — Contact email"). */
   email: "flex flex-col items-start gap-5",
-  emailLink: "block",
+  /* 44px target: below 768px the fitted line is only ~20px tall (P12.2). */
+  emailLink: "flex min-h-touch items-center",
   emailLine: "font-display text-h2",
   links: "flex flex-col items-start",
   stamp: "flex items-center",

@@ -102,7 +102,8 @@ export function DimensionDemo() {
         </Text>
         <Dimension targetRef={word} axis="x" play={play} />
       </div>
-      <div className="relative pb-8 pl-9">
+      {/* max-w-full: under align="start" the wrapper shrink-wraps, so the box's own max-w-full could not cap it at 360 (P12.1). */}
+      <div className="relative max-w-full pb-8 pl-9">
         <div ref={box} className="h-10 w-12 max-w-full resize border-hair border-rule overflow-auto p-3">
           <Text variant="data" tone="muted">
             Drag the corner to resize

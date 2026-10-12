@@ -23,11 +23,11 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 
 ## Current focus
 
-- **Phase:** 12 — Responsive, accessibility & reduced motion
-- **Next subtask:** P12.1
+- **Phase:** 13
+- **Next subtask:** P13.1
 - **Owner content:** received and fully confirmed 2026-10-08 → `content/owner-content.md`.
 
-**Last updated:** 2026-10-12 — Phase 12f complete: no plate flash on a hard load of /work. Earlier: 12e letter swap, 12d field-only /work. Earlier: 2026-10-10 — Phase 11d complete: Sheet 02 opens with the full-bleed portrait band and Systems · Retrieval · Interfaces; lint/test/build pass; next: Phase 12 (confirm card focus by real Tab and CSS reduced-motion paths).
+**Last updated:** 2026-10-12 — Phase 12 complete: breakpoint, touch, keyboard, contrast and reduced-motion audits pass on /, /work, case, /system; six fixes; Lighthouse a11y 100; reduced motion approved by owner. Earlier: 12f no plate flash on a hard load of /work.
 
 ## Phase overview
 
@@ -48,7 +48,7 @@ Status values: `todo` · `in progress` · `done` · `blocked` · `skipped (reaso
 | 11b | Toolkit gauge, work archive & screenshot plates | `specs/phase11b.md` | done |
 | 11c | Assembly cards, ink reveal, portrait & pixel seams | `specs/phase11c.md` | done |
 | 11d | About sheet: full-bleed portrait | `specs/phase11d.md` | done |
-| 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | todo |
+| 12 | Responsive, accessibility & reduced motion | `specs/phase12.md` | done |
 | 12b | Work page: drawing register | `specs/phase12b.md` | done |
 | 12c | Work page: floating field | `specs/phase12c.md` | done |
 | 12d | Work page: field only | `specs/phase12d.md` | done |
@@ -223,12 +223,14 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 ### Phase 12 — Responsive & a11y
 | ID | Subtask | Status | Notes |
 |---|---|---|---|
-| P12.1 | Breakpoint audit | todo | |
-| P12.2 | Touch audit | todo | |
-| P12.3 | Keyboard + screen reader | todo | |
-| P12.4 | Contrast audit | todo | |
-| P12.5 | Reduced-motion walkthrough | todo | |
-| P12.6 | Fix list | todo | |
+| P12.1 | Breakpoint audit | done | `/`, `/work`, case, `/system` at 360–1920, scrolled end to end: scrollWidth = innerWidth everywhere, hero = viewport height, prose ≤ 62ch. Toolkit gauge headings report scrollWidth > clientWidth but render whole (checked by screenshot); "long" `li`s are work cards, not prose |
+| P12.2 | Touch audit | done | 360/390/768/1024 touch: no crosshair, Lenis off for touch, Dock menu and /work plates open by tap. Fixed: Contact email link 19px tall below 768 (now 44). Inline links in copy and the toolkit readout keep the WCAG 2.5.8 inline exception; `/system` grid checkbox is 20px but its label is 44px |
+| P12.3 | Keyboard + screen reader | done | Tab order logical on /, /work, case, /system; focus visible everywhere (diagram nodes draw their own ring); menu traps focus, Esc closes and returns focus; one h1 per page, no skipped levels, landmarks + skip link. Lighthouse a11y 100 on /, /work, /work/speechpath (desktop + mobile). Gauge judged OK: Tab reaches the needle tool's links; a tool with no project has none, and all those links are also on the work cards |
+| P12.4 | Contrast audit | done | fg 16.2/16.2/13.2, fg-muted 6.6/5.1/5.9, focus 15.1/6.4/13.2 (ink/paper/signal). DOM sweep of every visible text node on 4 pages: zero failures. Rules (~1.4:1) are decorative only; outline buttons use fg. No token changes |
+| P12.5 | Reduced-motion walkthrough | done | Emulated reduce: no Lenis, no running animations, no split chars, trace undashed, Revisions unpinned, menu open at 30ms, diagram edges drawn and static (also via client nav). 12 screenshots approved by owner 2026-10-12 |
+| P12.6 | Fix list | done | (1) Hero 831px at 360×740, buttons under the Dock: block padding 64px and log gap 32px below 640px. (2) `/system` 368px wide at 360: Dimension demo box wrapper shrink-wrapped past its max-w-full. (3) `/system` velocity line wider than a 360 column at wdth 115: h2 below 640px. (4) Statement 63ch at 1920: max-w-measure. (5) Contact email link 19px tall below 768: min-h-touch. (6) `/system` hover demo link 34px: min-h-touch. All re-verified |
+| P12.7 | Gen Z copy pass | done | Verified df20b42: statement, availability and the four toolkit intros carry the layer; hero and contact lines unchanged; portrait band has no overlay. Flagged to owner: the same commit removed tools (Zustand, TanStack Query, FastAPI, Celery, HuBERT, SpeechBrain, pgvector…) from the toolkit and project stacks, which the spec says to preserve. Owner kept the removals (2026-10-12); SpeechPath diagram now reads Python API / Background workers / job queue. Validated 2026-10-12 (all criteria, see phase12.md) |
+| P12.8 | Trace surface colour | done | Pixel scan of 15 mid-seam frames (motion on, every scene boundary at 3 depths) and 12 reduced-motion frames: no lime on paper, no signal-deep on ink. One hit is the signal-deep trace crossing a 1px ink hairline in the gauge, not an ink surface |
 
 ### Phase 12b — Work page: drawing register
 | ID | Subtask | Status | Notes |
@@ -427,6 +429,8 @@ Phase 7 can run any time after Phase 1 (in parallel with 2–6).
 | 2026-10-12 | `/work` opens with a floating field: the h1 centred in a first-screen band, the four case-page plates floating around it against the cursor (after Fancy Components Parallax Floating, written on our own rAF loop, no package) | Owner chose direction B (phase12c.md). The plates are flat 2D frames, so the "floating 3D objects" ban is not touched |
 | 2026-10-12 | Register removed from `/work`; the floating field is the index (plates are real links, IAM floats as a fifth dashed plate, phones stack). TechText removed with it | Owner request (phase12d.md); TechText's only use was the register titles |
 | 2026-10-12 | Letter swap (after Fancy Components Letter 3D Swap, written on Motion) replaces roll text on nav links and is added to Button labels alongside the fill/underline | Owner chose A (phase12e.md). A short rotation of type, not a 3D object, so the ban is not touched; Motion owns it as a state-driven micro-interaction |
+| 2026-10-12 | Hero block padding is 64px below 640px instead of `--section-y` (96px) | P12.1: at 360×740 the section rhythm made the hero 831px tall and put See the work / Get in touch under the Dock. 64px still clears the 56px Dock |
+| 2026-10-12 | Tool removals from df20b42 stand; SpeechPath diagram renamed FastAPI → Python API, Celery workers → Background workers, Redis note → job queue + pub/sub | Owner decision after P12.7 flagged that the copy pass dropped technical claims. `content/owner-content.md` keeps the original record |
 | 2026-10-12 | `/work` plate cut-in plays on client-navigation arrivals only; a hard load shows the plates as served | Owner chose A (phase12f.md): removes the show→hide→show flash with no state where content is hidden before JS |
 
 ## Notes for agents
