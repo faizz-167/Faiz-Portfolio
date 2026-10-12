@@ -30,7 +30,8 @@ function seamEnd() {
  * The pixel seam at the bottom edge of a scene (P11c.6): cells in the next
  * scene's surface colour dissolve the boundary upward as it scrolls away.
  * Place it as the last child of the scene; it overlays the scene's bottom
- * padding and content (above them, below the trace), adding no height.
+ * padding and content, including the decorative trace. A switched cell must
+ * mask the previous surface's route rather than show it in the wrong colour.
  */
 export function PixelSeam({ to, seed }: { to: Surface; seed: number }) {
   return (
@@ -43,7 +44,7 @@ export function PixelSeam({ to, seed }: { to: Surface; seed: number }) {
       bias="up"
       start="bottom bottom"
       end={seamEnd}
-      className="absolute inset-x-0 bottom-0 z-base"
+      className="absolute inset-x-0 bottom-0 z-content"
     />
   );
 }

@@ -19,6 +19,8 @@ Phases 9–11 complete.
 | P12.4 | Contrast & colour audit on all surfaces |
 | P12.5 | Reduced-motion walkthrough |
 | P12.6 | Fix list execution |
+| P12.7 | Subtle Gen Z copy pass |
+| P12.8 | Signal trace surface colour fix |
 
 ## Execution
 
@@ -48,6 +50,13 @@ still look intentional.
 ### P12.6
 Log each issue as a row in `status.md` under P12.6 notes; fix; re-verify.
 
+### P12.7
+Refresh the profile statement, availability line, and toolkit introductions with a restrained Gen Z
+layer: confident, conversational phrases such as "no fluff" or "no drama" are allowed. Preserve
+all technical claims and the two locked signature lines. Do not add slang to project facts,
+architecture labels, or accessibility copy. Remove the role-word overlay from the portrait band so
+the photograph remains unobstructed.
+
 ## Validation criteria
 
 - [ ] Zero horizontal overflow at all audited widths.
@@ -55,3 +64,15 @@ Log each issue as a row in `status.md` under P12.6 notes; fix; re-verify.
 - [ ] Full keyboard operation verified.
 - [ ] All contrast pairs pass AA (text) / 3:1 (UI).
 - [ ] Reduced-motion version reviewed with screenshots and approved as intentional.
+- [ ] Profile and toolkit copy have a subtle Gen Z layer without changing technical claims or locked
+      signature lines.
+- [ ] The portrait band contains no role-word or rule overlay.
+
+### P12.8
+The signal trace must show one surface-appropriate colour at every point: signal on ink,
+signal-deep on paper, and on-signal on the signal surface. Its SVG clip regions must exclude the
+base ink route from non-ink scenes. During a pixel seam, switched cells mask the decorative trace
+until the receiving scene's route is visible on its own surface.
+
+- [ ] The trace never shows the ink-surface colour through a paper or signal scene.
+- [ ] No previous-surface trace colour appears over a switched pixel-seam cell.

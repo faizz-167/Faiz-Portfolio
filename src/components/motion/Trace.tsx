@@ -354,6 +354,9 @@ export function Trace({ armed = true, className }: TraceProps) {
               ref={(node) => {
                 clips.current[i] = node;
               }}
+              // The ink clip has paper and signal rectangles as holes. Set both rules because SVG
+              // clipping engines may otherwise use the path's nonzero fill when resolving the mask.
+              fillRule="evenodd"
               clipRule="evenodd"
             />
           </clipPath>

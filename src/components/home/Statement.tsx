@@ -31,7 +31,7 @@ export function Statement() {
       <h2 id={sceneTitleId(SCENE_ID)} className="sr-only">
         Notes
       </h2>
-      <PortraitBand portrait={profile.portrait} roleWords={profile.roleWords} />
+      <PortraitBand portrait={profile.portrait} />
       <Container>
         <p className={statementClasses.caption}>
           <span>Fig. 01 — {profile.name}</span>

@@ -10,27 +10,27 @@ export const toolkitFaces = [
     name: "Interface",
     categories: ["frontend"],
     paragraph:
-      "Typed React and Next.js front ends that do real work: an in-browser audio recorder, a drag-and-drop plan board, live dashboards. State lives in Zustand and TanStack Query, styles in Tailwind, and nothing ships until it reads cleanly on a phone.",
+      "Typed React and Next.js front ends that do real work, no fluff: an in-browser audio recorder, a drag-and-drop plan board, live dashboards. State stays deliberate, styles stay in Tailwind, and nothing ships until it reads cleanly on a phone.",
   },
   {
     id: "systems",
     name: "Systems",
     categories: ["language", "backend", "data", "infra"],
     paragraph:
-      "APIs, auth and data models in Node, Express and FastAPI, backed by PostgreSQL and Redis. Background work runs in Celery, files sit in blob storage, and services stay up under systemd on Linux.",
+      "APIs, auth and data models in Node and Express, backed by PostgreSQL and Redis. Background work stays reliable, files sit in blob storage, and services keep doing their thing on Linux—no drama.",
   },
   {
     id: "ai",
     name: "AI",
     categories: ["ai"],
     paragraph:
-      "Models wired into products, not demos. Whisper, HuBERT and SpeechBrain score speech in real time; OpenAI and Azure OpenAI answer through the Vercel AI SDK and an MCP server; pgvector gives retrieval its memory.",
+      "Models wired into products, not demos. Whisper handles speech in real time; OpenAI answers through the Vercel AI SDK and an MCP server; retrieval gets the context it needs. Useful beats flashy every time.",
   },
   {
     id: "tooling",
     name: "Tooling",
     categories: ["tooling"],
     paragraph:
-      "The bench around the build: Git and GitHub, Figma for the first sketch, esbuild and Pino for the runtime, Claude Code for the long stretches, and UiPath and Telegram bots when the job is automation.",
+      "The bench around the build: Git and GitHub, Figma for the first sketch, Claude Code for the long stretches, and UiPath and Telegram bots when the job is automation. The stack stays practical and low-key gets it done.",
   },
 ] as const satisfies readonly ToolkitFace[];

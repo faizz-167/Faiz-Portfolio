@@ -21,20 +21,12 @@ export const projects = [
       "react",
       "typescript",
       "tailwind",
-      "zustand",
-      "tanstack-query",
-      "fastapi",
       "python",
       "postgresql",
       "sqlalchemy",
-      "celery",
       "redis",
       "websockets",
       "whisper",
-      "hubert",
-      "speechbrain",
-      "spacy",
-      "pytorch",
     ],
     metrics: [
       {
@@ -155,7 +147,7 @@ export const projects = [
     role: "Full-stack engineer",
     summary:
       "A cloud academic system where teachers ask questions about student data in plain language, answered through an MCP server connected to PostgreSQL.",
-    stack: ["nextjs", "typescript", "azure-openai", "azure-blob", "postgresql", "mcp"],
+    stack: ["nextjs", "typescript", "azure-blob", "postgresql", "mcp"],
     metrics: [
       {
         label: "Bulk ingest",
@@ -247,15 +239,10 @@ export const projects = [
       "react",
       "typescript",
       "tailwind",
-      "nextauth",
       "postgresql",
-      "pgvector",
-      "drizzle",
       "openai-api",
       "vercel-ai-sdk",
       "redis",
-      "vercel-blob",
-      "esbuild",
     ],
     metrics: [
       { label: "Answer threshold", value: "0.75", context: "cosine similarity needed to mark a query answered" },
@@ -387,7 +374,7 @@ export const projects = [
     summary:
       "A Telegram bot that watches the owner's laptop — health, network, new downloads, on-demand screenshots and webcam photos, an anti-theft \"who switched me on\" snapshot — plus a small robot pet that hangs in a corner of the screen.",
     repo: "https://github.com/faizz-167/Personal-Bot",
-    stack: ["python", "telegram-bot-api", "tkinter", "systemd", "linux", "windows"],
+    stack: ["python", "telegram-bot-api", "linux", "windows"],
     metrics: [],
     architecture: {
       // The dossier gives the topology only (phone → Bot API → monitor_bot.py → five modules);
@@ -457,7 +444,7 @@ export const projects = [
     summary:
       "An Express 5 + TypeScript identity service: organisations, members, roles, permissions, sessions and invitations under /api/v1.",
     repo: "https://github.com/faizz-167/IAM-backend",
-    stack: ["typescript", "nodejs", "express", "zod", "jwt", "pino"],
+    stack: ["typescript", "nodejs", "express", "zod"],
     // In progress: row only, no case page, so no metrics, diagram or body (owner decision).
     metrics: [],
     architecture: { nodes: [], edges: [] },
